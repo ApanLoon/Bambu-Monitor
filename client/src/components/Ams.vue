@@ -7,6 +7,7 @@ import BitDisplay from "./generic/BitDisplay.vue";
 import IconAms from "./icons/IconAms.vue";
 import IconBambuLab from "./icons/IconBambuLab.vue"
 import IconSpool from "./icons/IconSpool.vue"
+import FilamentTray from "./ams/FilamentTray.vue"
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)
@@ -104,25 +105,7 @@ const isBbl = (amsIndex : string, trayIndex : string) =>
                 <local-info><span>Humidity:</span><span>{{ ams.humidity }}</span></local-info>
                 <local-info><span>Temp:</span><span>{{ ams.temp }}&deg;</span></local-info>
             </div>
-            <local-tray v-for="tray in ams.tray" :class="{'tray-is-loaded': status.ams.tray_now === tray.id }">
-                <template v-if="isTrayReading(ams.id, tray.id)">
-                    <IconSpool class="icon-spool"></IconSpool>
-                </template>
-                <template v-if="isTrayEmpty(ams.id, tray.id)">
-                    <local-tray-text>
-                        <div>Empty</div>
-                    </local-tray-text>
-                </template>
-                <template  v-if="isTrayRead(ams.id, tray.id) && isTrayEmpty(ams.id, tray.id) === false">
-                    <local-tray-fill :style="{'background-color': '#' + tray.tray_color, 'height': tray.remain + '%' }"></local-tray-fill>
-                    <local-tray-text>
-                        <IconBambuLab v-if="isBbl(ams.id, tray.id)"></IconBambuLab>
-                        <div>{{ tray.tray_type }}</div>
-                        <div>{{ tray.remain }}%</div>
-                        <div>~{{ tray.remain / 100 * Number(tray.tray_weight) }}g</div>
-                    </local-tray-text>
-                </template>
-            </local-tray>
+            <FilamentTray v-for="tray in ams.tray" :amsId="Number(ams.id)" :tray="tray" :currentTrayId="Number(bambuMonitorClient.Status.value.ams.tray_now)"></FilamentTray>
         </local-ams-instance>
     </local-ams>
 </template>
@@ -188,55 +171,5 @@ local-info
     display: flex;
     justify-content: space-between;
     margin-right: 0.5rem;
-}
-
-local-tray
-{
-    border: 1px solid var(--color-border);
-    position: relative;
-    transform: translateY(-50%);
-    top: 50%;
-}
-
-.icon-spool
-{
-    display: block;
-    margin: auto;
-    animation: spin 5s linear infinite ;
-}
-@keyframes spin
-{
-  100% {transform: rotate(360deg);}
-}
-
-local-tray local-tray-text
-{
-    color: white;
-    filter:  brightness(.7);
-    mix-blend-mode: difference;
-    text-align: center;
-}
-
-local-tray local-tray-text svg
-{
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    margin: 0.2rem;
-}
-
-local-tray local-tray-fill
-{
-    display: block;
-    border-top: 1px solid var(--color-border);
-    position: absolute;
-    width: 100%;
-    bottom: 0px;
-    z-index: -10;
-}
-
-.tray-is-loaded
-{
-    border: 1px solid var(--color-on);
 }
 </style>
