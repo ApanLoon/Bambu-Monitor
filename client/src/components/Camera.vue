@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, inject, onMounted, ref, type Ref, watch } from "vue";
-import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
+import type { IBambuMonitorClient } from "@/plugins/IBambuMonitorClient";
 
 import ToggleSwitch from "./generic/ToggleSwitch.vue"
 

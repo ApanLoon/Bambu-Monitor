@@ -1,16 +1,97 @@
 <script lang="ts" setup>
-import { inject } from "vue";
+import { inject, computed } from "vue";
 import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
+
+import IconAms from "../icons/IconAms.vue";
+import IconHumidity from "../icons/IconHumidity.vue";
+
+import Camera from "../Camera.vue";
+import Thermometer from "../generic/Thermometer.vue"
+
+import FilamentTray from "../ams/FilamentTray.vue"
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)
 {
   throw new Error ("[StatusPage] Setup: No BambuMonitorClient plugin found.");
 }
+
+const RemainingTime = computed<string>(() =>
+{
+    let minutes = bambuMonitorClient.Status.value.mc_remaining_time;
+    let hours = Math.floor(minutes / 60);
+    minutes -= hours * 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+});
+
+const status = computed<string>(() => 
+{
+  return bambuMonitorClient.Status.value.gcode_state;
+});
+
+const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.round(((value - min) / (max - min)) * 10 ) * 10;
 </script>
 
-<template>
+<template v-if="bambuMonitorClient.IsConnected.value && bambuMonitorClient.IsPrinterConnected.value">
   <local-container>
+    <Camera></Camera>
+    <local-job class="box" v-if="bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.CurrentJob.value.Project != null && bambuMonitorClient.Status.value !== undefined">
+      <local-job-image>
+        <img :src="bambuMonitorClient.CurrentJob.value.Project.ThumbnailFile" alt="Project Image" />
+      </local-job-image>
+      <local-job-name>{{ bambuMonitorClient.CurrentJob.value.Name }}</local-job-name>
+      <local-job-profile>{{ bambuMonitorClient.CurrentJob.value.Project.SettingsName }}</local-job-profile>
+      <local-job-layers><h1>Printed layers</h1><span>{{ bambuMonitorClient.Status.value.layer_num }}/{{ bambuMonitorClient.Status.value.total_layer_num }}</span></local-job-layers>
+      <local-job-progress-text><h1>{{bambuMonitorClient.Status.value.mc_percent}}%</h1><span>-{{ RemainingTime }}</span></local-job-progress-text>
+      <local-job-progress-bar><progress :value="bambuMonitorClient.Status.value.mc_percent" min="0" max="100"></progress></local-job-progress-bar>
+      <local-job-status>{{ status }}</local-job-status>
+      <local-job-actions></local-job-actions>
+    </local-job>
+    <local-device v-if="bambuMonitorClient.Status.value !== undefined">
+      <local-temperature class="box">
+        <div>
+            <h2>Nozzle</h2>
+            <Thermometer :currentValue="Number(bambuMonitorClient.Status.value.nozzle_temper)" :targetValue="Number(bambuMonitorClient.Status.value.nozzle_target_temper)" :valueMin="0" :valueMax="300"></Thermometer>
+        </div>
+        <div>
+            <h2>Bed</h2>
+            <Thermometer :currentValue="Number(bambuMonitorClient.Status.value.bed_temper)" :targetValue="Number(bambuMonitorClient.Status.value.bed_target_temper)" :valueMin="0" :valueMax="250"></Thermometer>
+        </div>
+        <div>
+            <h2>Chamber</h2>
+            <Thermometer :currentValue="Number(bambuMonitorClient.Status.value.chamber_temper)" :valueMin="0" :valueMax="60"></Thermometer>
+        </div>
+      </local-temperature>
+      <local-fan class="box">
+        <div>
+          <h2>Chamber fan</h2>
+          {{ toTenPercent(Number(bambuMonitorClient.Status.value.big_fan2_speed), 15, 0) }}%
+        </div>
+        <div>
+          <h2>Cooling fan</h2>
+          {{ toTenPercent(Number(bambuMonitorClient.Status.value.cooling_fan_speed), 15, 0) }}%
+        </div>
+        <div v-if="bambuMonitorClient.Status.value.aux_part_fan === true">
+          <h2>Aux fan</h2>
+          {{ toTenPercent(Number(bambuMonitorClient.Status.value.big_fan1_speed), 15, 0) }}%
+        </div>
+      </local-fan>
+      <local-ams class="box" v-for="ams in bambuMonitorClient.Status.value.ams.ams">
+        <local-ams-name><IconAms class="icon-ams"></IconAms>{{ ams.id }}</local-ams-name>
+        <local-ams-humidity><IconHumidity :fill="(5 - ams.humidity) / 5"></IconHumidity></local-ams-humidity>
+        <local-ams-filaments>
+          <FilamentTray v-for="tray in ams.tray" :amsId="Number(ams.id)" :tray="tray" :currentTrayId="Number(bambuMonitorClient.Status.value.ams.tray_now)"></FilamentTray>
+        </local-ams-filaments>
+      </local-ams>
+      <local-ams class="box">
+        <local-ams-name>External spool</local-ams-name>
+        <local-ams-humidity></local-ams-humidity>
+        <local-ams-filaments>
+          <FilamentTray :amsId="0" :tray="bambuMonitorClient.Status.value.vt_tray" :currentTrayId="Number(bambuMonitorClient.Status.value.ams.tray_now)"></FilamentTray>
+        </local-ams-filaments>
+      </local-ams>
+    </local-device>
+<!--
     <template v-if="bambuMonitorClient.IsConnected.value && bambuMonitorClient.IsPrinterConnected.value && bambuMonitorClient.Status.value !== undefined && bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.CurrentJob.value.Project != null ">
         <img :src="bambuMonitorClient.CurrentJob.value.Project?.ThumbnailFile" alt="Project Image" />
         <local-itemised-list>
@@ -29,6 +110,7 @@ if (bambuMonitorClient === undefined)
           </local-filament>
         </div>
     </template>
+    -->
   </local-container>
 </template>
 
@@ -37,11 +119,138 @@ local-container
 {
   justify-items: center;
 }
-local-box
+
+local-job
 {
-  display: block;
+  display: grid;
+  grid-template-areas: "image name"
+                       "image profile"
+                       "image status"
+                       "image layers"
+                       "image progress-text"
+                       "image progress-bar"
+                       " -    actions";
+  grid-template-columns: 40% auto;
+}
+
+local-job-image
+{
+  grid-area: image;
+  aspect-ratio: 1 / 1;
+}
+
+local-job-name
+{
+  color: var(--color-text-highlight);
+  font-size: 1rem;
+}
+local-job-layers
+{
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+local-job-layers h1
+{
+  color: var(--color-text-highlight);
+    font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+local-job-progress-text
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  font-size: 1rem;
+}
+local-job-progress-text h1
+{
+  font-size: 1.5rem;
+}
+
+local-job-status
+{
+  align-self: center;
+}
+local-job-actions
+{
+  height: 1rem;
+}
+
+local-temperature
+{
+  display: flex;
+  justify-content: space-between;
+}
+
+local-fan
+{
+  display: flex;
+  justify-content: space-between;
+}
+
+local-ams
+{
+  display: grid;
+  grid-template-areas: "name humidity"
+                       "filaments filaments";
+}
+
+.icon-ams
+{
+  width: auto;
+  height: 0.33rem;
+  padding-right: 0.33rem;
+}
+
+local-ams-humidity
+{
+  padding-top: 0.33rem;
+  justify-self: right;
+}
+local-ams-filaments
+{
+  grid-area: filaments;
+  display: grid;
+  grid-auto-flow: column;
+  padding-bottom: 1rem;
+}
+
+.box
+{
+  margin-top: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   border: 1px solid var(--color-border);
-  overflow: auto;
+}
+
+.box div h2
+{
+  justify-self: center;
+}
+
+h1
+{
+  display: inline;
+}
+
+progress
+{
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem; 
+  width: 100%;
+  height: 1rem;
+}
+progress::-webkit-progress-bar
+{
+  background-color: var(--color-background);
+  border-radius: 0.5rem;
+}
+progress::-webkit-progress-value
+{
+  background-color: var(--color-on);
+  border-radius: 0.5rem;
 }
 
 img
@@ -50,6 +259,8 @@ img
   width: 90%;
   justify-self: center;
 }
+
+/*
 
 local-itemised-list
 {
@@ -78,4 +289,5 @@ local-filament-text
     mix-blend-mode: difference;
     text-align: center;
 }
+*/
 </style>
