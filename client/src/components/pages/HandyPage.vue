@@ -78,7 +78,7 @@ const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.r
       </local-fan>
       <local-ams class="box" v-for="ams in bambuMonitorClient.Status.value.ams.ams">
         <local-ams-name><IconAms class="icon-ams"></IconAms>{{ ams.id }}</local-ams-name>
-        <local-ams-humidity><IconHumidity :fill="(5 - ams.humidity) / 5"></IconHumidity></local-ams-humidity>
+        <local-ams-humidity><IconHumidity :fill="(5 - Number(ams.humidity)) / 5"></IconHumidity></local-ams-humidity>
         <local-ams-filaments>
           <FilamentTray v-for="tray in ams.tray" :amsId="Number(ams.id)" :tray="tray" :currentTrayId="Number(bambuMonitorClient.Status.value.ams.tray_now)"></FilamentTray>
         </local-ams-filaments>
