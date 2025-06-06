@@ -39,46 +39,46 @@ export class BambuMonitorClient implements IBambuMonitorClient
     }
 
     // TODO: Testing Zone:
-    private _useDebugJob = true;
-    private CreateDebugJob()
-    {
-        let now = new Date();
-        let start = new Date();
-        start.setMinutes(now.getMinutes() - 5);
-        let stop = new Date();
-        stop.setMinutes(now.getMinutes() + 100);
+    // private _useDebugJob = true;
+    // private CreateDebugJob()
+    // {
+    //     let now = new Date();
+    //     let start = new Date();
+    //     start.setMinutes(now.getMinutes() - 5);
+    //     let stop = new Date();
+    //     stop.setMinutes(now.getMinutes() + 100);
 
-        return new Job(
-            "371f11c0-60cf-49d9-bd19-5ba2ee46f2b7",
-            start,
-            stop,
-            "gecko_even_better2",
-            "/data/Metadata/plate_1.gcode",
-            JobState.Started,
-            {
-                SettingsName: "0.08mm Extra Fine @Apan",
-                PlateIndex: 1,
-                PlateName: "Gecko",
-                ThumbnailFile: "projectArchive\\20250501-182000-gecko_even_better2\\Metadata\\plate_1.png",
-                TotalWeight: 3.94,
-                Filaments:
-                [
-                    {
-                        TrayId: 1,
-                        Type: "PLA",
-                        Colour: "#8e9089",
-                        UsedLength: 1.3,
-                        UsedWeight: 3.94,
-                        BrandFamily: "PLA Basic",
-                        BrandId: "A00-D0",
-                        IsBBL: true,
-                        Uuid: "5D150431BEB44531BBE9E36718E9AC3A",
-                        BrandFamilyId: "GFA00"
-                    }
-                ]
-            } as Project
-        );
-    }
+    //     return new Job(
+    //         "371f11c0-60cf-49d9-bd19-5ba2ee46f2b7",
+    //         start,
+    //         stop,
+    //         "gecko_even_better2",
+    //         "/data/Metadata/plate_1.gcode",
+    //         JobState.Started,
+    //         {
+    //             SettingsName: "0.08mm Extra Fine @Apan",
+    //             PlateIndex: 1,
+    //             PlateName: "Gecko",
+    //             ThumbnailFile: "projectArchive\\20250501-182000-gecko_even_better2\\Metadata\\plate_1.png",
+    //             TotalWeight: 3.94,
+    //             Filaments:
+    //             [
+    //                 {
+    //                     TrayId: 1,
+    //                     Type: "PLA",
+    //                     Colour: "#8e9089",
+    //                     UsedLength: 1.3,
+    //                     UsedWeight: 3.94,
+    //                     BrandFamily: "PLA Basic",
+    //                     BrandId: "A00-D0",
+    //                     IsBBL: true,
+    //                     Uuid: "5D150431BEB44531BBE9E36718E9AC3A",
+    //                     BrandFamilyId: "GFA00"
+    //                 }
+    //             ]
+    //         } as Project
+    //     );
+    // }
 
     public Connect(connectHandler? : () => void) : void
     {
@@ -125,11 +125,11 @@ export class BambuMonitorClient implements IBambuMonitorClient
     private UpdateCurrentJob(job : Job)
     {
         // TODO: Testing Zone:
-        if (this._useDebugJob)
-        {
-            this.CurrentJob.value = this.CreateDebugJob();
-            return;
-        }
+        // if (this._useDebugJob)
+        // {
+        //     this.CurrentJob.value = this.CreateDebugJob();
+        //     return;
+        // }
 
         if (job !== null)
         {
