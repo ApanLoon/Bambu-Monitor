@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { inject, computed } from "vue";
 import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
+import { Stage } from "../../../../server/src/shared/BambuMessages";
 
 import IconAms from "../icons/IconAms.vue";
 import IconHumidity from "../icons/IconHumidity.vue";
@@ -26,7 +27,8 @@ const RemainingTime = computed<string>(() =>
 
 const status = computed<string>(() => 
 {
-  return bambuMonitorClient.Status.value.gcode_state;
+  
+  return `${Stage[bambuMonitorClient.Status.value.stg_cur]} (${bambuMonitorClient.Status.value.gcode_state})`;
 });
 
 const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.round(((value - min) / (max - min)) * 10 ) * 10;
@@ -172,6 +174,7 @@ local-job-progress-text h1
 local-job-status
 {
   align-self: center;
+  font-size: 1rem;
 }
 local-job-actions
 {
