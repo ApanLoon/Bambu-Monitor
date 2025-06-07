@@ -104,7 +104,7 @@ export class Xcam
 
 export enum Stage
 {
-    ""                                                =  0,
+    "Printing"                                        =  0, // TODO: I think that I have seen this value even when not printing.
     "Auto bed leveling"                               =  1,
     "Heatbed preheating"                              =  2,
     "Sweeping XY mech mode"                           =  3,
