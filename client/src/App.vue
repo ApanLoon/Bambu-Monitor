@@ -13,6 +13,7 @@ bambuMonitorClient.Connect(()=>
 {
   console.log("[App] BambuMonitorClient connected");
   bambuMonitorClient.GetState();
+  bambuMonitorClient.RequestJobHistory();
   bambuMonitorClient.RequestFullLog();
 });
 </script>
