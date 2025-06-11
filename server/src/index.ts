@@ -125,6 +125,8 @@ app.get("/config.json", (request, response) =>
 app.use("/projectArchive", express.static(path.join(__dirname, projectArchive)));
 app.use("/",               express.static(path.join(__dirname, wwwroot)));
 
+app.use(function(req, res){ res.sendFile(path.join(__dirname, wwwroot, "index.html")); });
+
 app.listen(webPort, () => {
   logger.Log(`[Web] Server is running at http://localhost:${webPort}`);
 });
