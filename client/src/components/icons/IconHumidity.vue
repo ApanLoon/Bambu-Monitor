@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { v4 as uuid } from "uuid";
+
 const props = defineProps(
 {
   fill: { type : Number, required : true }
 });
 
-const gradientId = "gradient-" + crypto.randomUUID();
+const gradientId = "gradient-" + uuid();
 const gradientRef =`url(#${gradientId})`;
 </script>
 
