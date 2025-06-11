@@ -9,11 +9,6 @@ if (bambuMonitorClient === undefined)
   throw new Error ("[HistoryPage] Setup: No BambuMonitorClient plugin found.");
 }
 
-onMounted(()=>
-{
-    bambuMonitorClient.RequestJobHistory();
-});
-
 function status(job : Job)
 {
     switch (job.State)
