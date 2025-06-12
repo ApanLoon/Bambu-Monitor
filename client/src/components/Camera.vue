@@ -26,7 +26,7 @@ function startCamera()
 {
     stopCamera();
 
-    const url = `ws://${bambuMonitorClient?.Options.Host}:9999`; // TODO: Where should it get the port?
+    const url = `wss://${bambuMonitorClient?.Options.Host}:${bambuMonitorClient?.Options.Port}/camera`;
 
     player = new JSMpeg.Player(url, 
     {

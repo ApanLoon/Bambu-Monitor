@@ -1,3 +1,4 @@
+import https from "node:https";
 import { MqttClient, connectAsync } from "mqtt";
 import { EventEmitter } from "node:events";
 import { Logger } from "../Logger/Logger.js";
@@ -12,14 +13,14 @@ import { CameraFeed } from "../RtspProxy/CameraFeed.js";
 
 export class BambuClientOptions
 {
-  Logger?        : Logger;
-  Host           : string = "localhost";
-  Port           : number = 8883;
-  Serial         : string = "no-serial";
-  UserName       : string = "bblp";
-  Password       : string = "";
-  FtpOptions     : BambuFtpOptions = new BambuFtpOptions;
-  CameraFeedPort : number = 9999;
+  public Logger?      : Logger;
+  public Host         : string = "localhost";
+  public Port         : number = 8883;
+  public Serial       : string = "no-serial";
+  public UserName     : string = "bblp";
+  public Password     : string = "";
+  public FtpOptions   : BambuFtpOptions = new BambuFtpOptions;
+  public HttpsServer? : https.Server;
 }
 
 export const BambuClientEvent = Object.freeze (
@@ -75,7 +76,7 @@ export class BambuClient extends EventEmitter
     Object.assign(this._options, options);
 
     this._ftpClient = new BambuFtpClient(this._options);
-    this._cameraFeed = new CameraFeed({ BambuClient: this, Port: this._options.CameraFeedPort, UserName: this._options.UserName, Password: this._options.Password }); // TODO: Should this even be in the BambuClient? The RtspProxy should probably be in BambuClient/ but the camera feed might be its own thing.
+    this._cameraFeed = new CameraFeed({ BambuClient: this, HttpsServer: this._options.HttpsServer, UserName: this._options.UserName, Password: this._options.Password }); // TODO: Should this even be in the BambuClient? The RtspProxy should probably be in BambuClient/ but the camera feed might be its own thing.
   }
   
   private Pad(n : number) : string

@@ -1,6 +1,0 @@
-
-{
-    "Note": "This should only be used when hosting with vite during development",
-    "Host": "localhost",
-    "Port": 4000
-}
