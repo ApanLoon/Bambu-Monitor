@@ -10,6 +10,8 @@ services:
       NODE_ENV: production
     volumes:
       - /volume1/docker/bambu-monitor/projectArchive/:/usr/src/app/projectArchive
+      - /usr/syno/etc/certificate/_archive/pbTpML/cert.pem:/usr/src/app/certificates/certificate.pem
+      - /usr/syno/etc/certificate/_archive/pbTpML/privkey.pem:/usr/src/app/certificates/privatekey.pem
     ports:
       - 5005:5005
       - 4000:4000

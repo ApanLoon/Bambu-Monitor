@@ -1,7 +1,9 @@
 import express, { Express, Request, Response } from "express";
+import https from "node:https";
+import fs from "node:fs";
+import path from "node:path";
 import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath } from "node:url";
 import { Api, ApiEvent } from "./Api/Api.js";
 import { BambuClient, BambuClientEvent } from "./BambuClient/BambuClient.js";
 import { type Change } from "./BambuClient/CompareObjects.js"
@@ -30,8 +32,6 @@ logger.Log(
 \\____|__  /\\____/|___|  /__||__|  \\____/|__|   
         \\/            \\/                       \n`, true);
 logger.Log("Starting up...");
-
-const app: Express = express();
 
 const database = new Database(
 {
@@ -112,6 +112,8 @@ if (process.env.IS_DEVELOPMENT)
   wwwroot = path.join("dist", wwwroot);
 }
 
+//const server: Express = express();
+const app = express();
 app.get("/config.json", (request, response) =>
 {
   response.setHeader("Content-Type", "application/json");
@@ -127,8 +129,17 @@ app.use("/",               express.static(path.join(__dirname, wwwroot)));
 
 app.use(function(req, res){ res.sendFile(path.join(__dirname, wwwroot, "index.html")); });
 
-app.listen(webPort, () => {
-  logger.Log(`[Web] Server is running at http://localhost:${webPort}`);
+const server = https.createServer(
+  {
+    key:  fs.readFileSync(path.join(__dirname, "certificates", "privatekey.pem")),
+    cert: fs.readFileSync(path.join(__dirname, "certificates", "certificate.pem"))
+  },
+  app
+);
+
+server.listen(webPort, () =>
+{
+  logger.Log(`[Web] Server is running at https://localhost:${webPort}`);
 });
 
 function sendState()
