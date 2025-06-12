@@ -1,11 +1,7 @@
 # syntax=docker/dockerfile:1
-ARG API_HOST
-ARG API_PORT
 ARG NODE_VERSION=18.12.1
 
 FROM node:${NODE_VERSION}-alpine
-ARG API_HOST
-ARG API_PORT
 
 RUN apk update && apk add ffmpeg
 
@@ -16,9 +12,6 @@ WORKDIR /usr/src/app
 
 COPY package.json .
 COPY ./dist .
-
-# TODO: There must be a better way to tell the client how to connect to the server.
-RUN echo "{ \"Host\": \"${API_HOST}\", \"Port\": ${API_PORT} }" > wwwroot/config.json
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
@@ -33,7 +26,7 @@ RUN npm i --omit=dev
 
 
 # Expose the port that the application listens on.
-EXPOSE 5005 4000 9999
+EXPOSE 5005 9999
 
 # Run the application.
 CMD node index.js

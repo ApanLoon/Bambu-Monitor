@@ -1,4 +1,6 @@
-import { WebSocketServer } from "ws";
+
+import https from "node:https";
+import WebSocket, { WebSocketServer } from "ws";
 import { EventEmitter } from "node:events";
 import { Connection, ConnectionCollection, ConnectionEvent } from "./ConnectionCollection.js";
 import { Logger } from "../Logger/Logger.js";
@@ -9,7 +11,7 @@ import { BambuMonitorClientMessage, BambuMonitorServerMessage } from "../shared/
 export class ApiOptions
 {
     public Logger? : Logger;
-    public Port : number = 4000;
+    public HttpsServer? : https.Server;
 }
 
 export const ApiEvent = Object.freeze (
@@ -27,7 +29,7 @@ export class Api extends EventEmitter
 {
     private options : ApiOptions = new ApiOptions;
     private connections : ConnectionCollection = new ConnectionCollection;
-    private server : WebSocketServer;
+    private socketServer? : WebSocketServer;
 
     public constructor(options : Partial<ApiOptions>)
     {
@@ -35,41 +37,58 @@ export class Api extends EventEmitter
 
         Object.assign(this.options, options);
 
-        this.server = new WebSocketServer({ port: this.options.Port });
-        this.options.Logger?.Log (`[Api] Listening on port ${this.options.Port}.`);
-
-        this.server.on("connection", socket =>
+        if (this.options.HttpsServer === undefined )
         {
-            let connection = new Connection(socket, (data : string) =>
+            this.options.Logger?.Log("Api requires an https server.");
+            return;
+        }
+        this.socketServer = new WebSocketServer({noServer: true});
+        this.options.HttpsServer.on("upgrade", (request, socket, head) =>
+        {
+            if (request.url === undefined)
             {
-                const msg = JSON.parse(data);
-                switch (msg.Type)
-                {
-                    case BambuMonitorServerMessage.GetState:           this.emit(ApiEvent.GetState);                       break;
-                    case BambuMonitorServerMessage.SetLight:           this.emit(ApiEvent.SetLight, msg.isOn);             break;
-                    case BambuMonitorServerMessage.GetPrinterLogLevel: this.emit(ApiEvent.GetPrinterLogLevel);             break;
-                    case BambuMonitorServerMessage.SetPrinterLogLevel: this.emit(ApiEvent.SetPrinterLogLevel, msg.Level);  break;
-                    case BambuMonitorServerMessage.RequestFullLog:     this.emit(ApiEvent.RequestFullLog);                 break;
-                    case BambuMonitorServerMessage.RequestJobHistory:  this.emit(ApiEvent.RequestJobHistory);              break;
-                }
-            },
-            (_event: any, connection: Connection) =>
-            {
-                //this.options.Logger?.Log (`[Api] Client disconnected. (${connection.id})`);
-                this.connections.remove(connection);
-            });
+                return;
+            }
 
-            //this.options.Logger?.Log(`[Api] Client connected. (${connection.id})`);
-            connection.on(ConnectionEvent.LostHeartbeat, ()=>
-            {
-                console.log("Lost Heartbeat: api");
-                this.connections.remove (connection);
-            });
+            const { pathname } = new URL(request.url, 'wss://do.not.care');
 
-            this.connections.add(connection);
+            if (pathname === "/api")
+            {
+                this.socketServer?.handleUpgrade(request, socket, head, socket => this.onConnection(socket, this));
+            }
         });
     }
 
+    private onConnection (socket : WebSocket, self : Api)
+    {
+        let connection = new Connection(socket, (data : string) =>
+        {
+            const msg = JSON.parse(data);
+            switch (msg.Type)
+            {
+                case BambuMonitorServerMessage.GetState:           self.emit(ApiEvent.GetState);                       break;
+                case BambuMonitorServerMessage.SetLight:           self.emit(ApiEvent.SetLight, msg.isOn);             break;
+                case BambuMonitorServerMessage.GetPrinterLogLevel: self.emit(ApiEvent.GetPrinterLogLevel);             break;
+                case BambuMonitorServerMessage.SetPrinterLogLevel: self.emit(ApiEvent.SetPrinterLogLevel, msg.Level);  break;
+                case BambuMonitorServerMessage.RequestFullLog:     self.emit(ApiEvent.RequestFullLog);                 break;
+                case BambuMonitorServerMessage.RequestJobHistory:  self.emit(ApiEvent.RequestJobHistory);              break;
+            }
+        },
+        (_event: any, connection: Connection) =>
+        {
+            //this.options.Logger?.Log (`[Api] Client disconnected. (${connection.id})`);
+            self.connections.remove(connection);
+        });
+
+        //this.options.Logger?.Log(`[Api] Client connected. (${connection.id})`);
+        connection.on(ConnectionEvent.LostHeartbeat, ()=>
+        {
+            console.log("Lost Heartbeat: api");
+            self.connections.remove (connection);
+        });
+
+        self.connections.add(connection);
+    }
     sendStatus (status : any )
     {
         this.connections.sendToAll(JSON.stringify(

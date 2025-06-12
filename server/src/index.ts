@@ -33,6 +33,28 @@ logger.Log(
         \\/            \\/                       \n`, true);
 logger.Log("Starting up...");
 
+// Express web server:
+const __filename = fileURLToPath(import.meta.url); // NOTE: This is the path to the folder where index.js is. I.e. dist/server/src and not dist as I was hoping.
+let __dirname = path.dirname(__filename); // TODO: __dirname will be "dist/server/src" int prod and "D:\GIT\ApanLoon\BambuMonitor\server\src\" in dev.
+
+let wwwroot = "./wwwroot";
+let projectArchive = "./projectArchive";
+if (process.env.IS_DEVELOPMENT)
+{
+  __dirname = path.join(__dirname, "..");
+  wwwroot = path.join("dist", wwwroot);
+}
+
+const app = express();
+const server = https.createServer(
+  {
+    key:  fs.readFileSync(path.join(__dirname, "certificates", "privatekey.pem")),
+    cert: fs.readFileSync(path.join(__dirname, "certificates", "certificate.pem"))
+  },
+  app
+);
+
+// Database:
 const database = new Database(
 {
   Logger:   logger,
@@ -42,14 +64,21 @@ const database = new Database(
   UserName: process.env.DB_USER         || "bambumonitor",
   Password: process.env.DB_PWD          || ""
 });
-  
+
+// JobManager:
 const jobManager = new JobManager(
 {
   Database: database
 });
 
-const api = new Api ({ Logger : logger, Port: Number(process.env.API_PORT) || 4000 });
+// API:
+const api = new Api (
+{
+  Logger : logger,
+  HttpsServer: server
+});
 
+// BambuClient:
 const bambuClient = new BambuClient(
 {
   Logger:   logger,
@@ -96,50 +125,19 @@ logger.on(LoggerEvent.MessageLogged, message => api.sendLogMessage(message));
 await database.Connect();
 bambuClient.connect();
 
-// Express web server:
+// Routes for Express web server:
 //
-const webPort = Number(process.env.WEB_PORT) || 3000;
 
-const __filename = fileURLToPath(import.meta.url); // NOTE: This is the path to the folder where index.js is. I.e. dist/server/src and not dist as I was hoping.
-let __dirname = path.dirname(__filename); // TODO: __dirname will be "dist/server/src" int prod and "D:\GIT\ApanLoon\BambuMonitor\server\src\" in dev.
-
-let wwwroot = "./wwwroot";
-let projectArchive = "./projectArchive";
-
-if (process.env.IS_DEVELOPMENT)
-{
-  __dirname = path.join(__dirname, "..");
-  wwwroot = path.join("dist", wwwroot);
-}
-
-//const server: Express = express();
-const app = express();
-app.get("/config.json", (request, response) =>
-{
-  response.setHeader("Content-Type", "application/json");
-  response.end(JSON.stringify(
-    {
-      Host:        process.env.API_HOST  || "localhost",
-      Port: Number(process.env.API_PORT) || 4000
-    }
-  ))
-});
 app.use("/projectArchive", express.static(path.join(__dirname, projectArchive)));
 app.use("/",               express.static(path.join(__dirname, wwwroot)));
 
 app.use(function(req, res){ res.sendFile(path.join(__dirname, wwwroot, "index.html")); });
 
-const server = https.createServer(
-  {
-    key:  fs.readFileSync(path.join(__dirname, "certificates", "privatekey.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "certificates", "certificate.pem"))
-  },
-  app
-);
-
+const webHost =        process.env.WEB_HOST  || "localhost";
+const webPort = Number(process.env.WEB_PORT) || 3000;
 server.listen(webPort, () =>
 {
-  logger.Log(`[Web] Server is running at https://localhost:${webPort}`);
+  logger.Log(`[Web] Server is running at https://${webHost}:${webPort}`);
 });
 
 function sendState()

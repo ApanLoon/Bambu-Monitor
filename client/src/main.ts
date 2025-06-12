@@ -11,6 +11,7 @@ import CameraPage from "./components/pages/CameraPage.vue";
 import HandyPage from "./components/pages/HandyPage.vue";
 import HistoryPage from "./components/pages/HistoryPage.vue";
 import LogPage from "./components/pages/LogPage.vue";
+import type { BambuMonitorClientOptions } from './plugins/BambuMonitorClient';
 
 const routes =
 [
@@ -21,36 +22,9 @@ const routes =
     { path: "/log",     component: LogPage     }
 ];
 
-console.log("[main] Getting config...");
-fetch ("config.json")
-.then (response =>
-{
-    if (!response.ok)
-    {
-        throw new Error (`${response.status} ${response.statusText}`);
-    }
-
-    response.json()
-    .then (config =>
-    {
-        const router = createRouter(
-            {
-                history: createWebHistory(),
-                routes
-            }
-        );
-        
-        const app = createApp(App);
-        app.use(BambuMonitorClientPlugin, config);
-        app.use(router);
-        app.mount("#app");
-    })
-    .catch(error =>
-    {
-        console.log ("[main] Unable to get config. ", error);
-    });
-})
-.catch(error=>
-{
-    console.log ("[main] Unable to get config. ", error);
-});
+const router = createRouter( { history: createWebHistory(), routes });
+const app = createApp(App);
+const url = new URL(window.location.href);
+app.use(BambuMonitorClientPlugin, { Host: url.hostname, Port: Number(url.port) } as BambuMonitorClientOptions);
+app.use(router);
+app.mount("#app");

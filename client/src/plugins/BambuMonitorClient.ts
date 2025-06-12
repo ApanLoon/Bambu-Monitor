@@ -84,7 +84,7 @@ export class BambuMonitorClient implements IBambuMonitorClient
     {
         console.log(`[BambuMonitorClient] Connecting to ${this.Options.Host}:${this.Options.Port}...`);
 
-        this._socket = new WebSocket(`ws://${this.Options.Host}:${this.Options.Port}`);
+        this._socket = new WebSocket(`wss://${this.Options.Host}:${this.Options.Port}/api`);
 
         this._socket.addEventListener("open", () => 
         {
