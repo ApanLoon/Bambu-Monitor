@@ -90,6 +90,7 @@ const bambuClient = new BambuClient(
     Port: 990,
     LocalFilePath: "./projectArchive"
   },
+  HttpsServer: server
 });
 
 //bambuClient.SetLogLevel(LogLevel.Trace);

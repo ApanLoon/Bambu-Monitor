@@ -60,18 +60,17 @@ To build a docker image of the Bambu Monitor,
 ## Configuration
 The server is configured using environment variables. Typically use a .env (docker.env for the container) file with the following variables:
 
-| Variable | Description | Default value |
-| -------- | ----------- | ------------- |
-| IS_DEVELOPMENT | When TRUE, the server will modify some paths to properly host the client and project files | FALSE |
-| X1C_HOST | IP-address or host name of the printer to connect to | |
-| ~~X1C_PORT~~ | ~~Port number for the MQTT server on the printer~~ | 8883 |
-| X1C_PASSWORD | Password for the printer (as shown in "Settings/General/LAN Only/Access code" on the printer display) |
-| X1C_SERIAL | The serial number of the printer (As shown in "Settings/General/Device info" on the printer display) |
-| WEB_PORT | Port number of the server hosting the client | 3000 |
-| API_HOST | Host name or IP-address of the server API | localhost |
-| API_PORT | Port of the server API | 4000 |
-| DB_HOST  | Host name or IP-address of the mongodb database storing the job history | |
-| DB_PORT  | Port of the mongodb database | 27017 |
-| DB_NAME  | Name of the database | BambuMonitor |
-| DB_USER  | Username for accessing the database | bambumonitor |
-| DB_PWD   | Password for accessing the database | |
+| Variable       | Description | Default value |
+| -------------- | ----------- | ------------- |
+| IS_DEVELOPMENT | When TRUE, the server will modify some paths to properly host the client and project files            | FALSE        |
+| X1C_HOST       | IP-address or host name of the printer to connect to                                                  |              |
+| ~~X1C_PORT~~   | ~~Port number for the MQTT server on the printer~~                                                    | 8883         |
+| X1C_PASSWORD   | Password for the printer (as shown in "Settings/General/LAN Only/Access code" on the printer display) |              |
+| X1C_SERIAL     | The serial number of the printer (As shown in "Settings/General/Device info" on the printer display)  |              |
+| WEB_HOST       | Host name or IP-address of the server, only used for server log message                               | localhost    |
+| WEB_PORT       | Port number of the server hosting the client (HTTPS only)                                             | 3000         |
+| DB_HOST        | Host name or IP-address of the mongodb database storing the job history                               |              |
+| DB_PORT        | Port of the mongodb database                                                                          | 27017        |
+| DB_NAME        | Name of the database                                                                                  | BambuMonitor |
+| DB_USER        | Username for accessing the database                                                                   | bambumonitor |
+| DB_PWD         | Password for accessing the database                                                                   |              |

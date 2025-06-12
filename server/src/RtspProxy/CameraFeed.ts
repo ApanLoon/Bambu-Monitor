@@ -1,3 +1,4 @@
+import https from "node:https";
 import WebSocket, { WebSocketServer } from "ws";
 import { EventEmitter } from "node:events";
 import { Connection, ConnectionCollection, ConnectionEvent } from "../Api/ConnectionCollection.js";
@@ -6,17 +7,17 @@ import { RtspProxy } from "./RtspProxy.js";
 
 export class CameraFeedOptions
 {
-    BambuClient : BambuClient | null = null;
-    Port        : number = 9999;
-    UserName    : string = "bblp";
-    Password    : string = "";
+    public BambuClient  : BambuClient | null = null;
+    public HttpsServer? : https.Server |undefined;
+    public UserName     : string = "bblp";
+    public Password     : string = "";
 }
 
 export class CameraFeed extends EventEmitter
 {
     private _options : CameraFeedOptions = new CameraFeedOptions();
 
-    private _server : WebSocketServer | undefined;
+    private _socketServer : WebSocketServer | undefined;
     private _connections : ConnectionCollection = new ConnectionCollection;
 
     private static readonly STREAM_MAGIC_BYTES = "jsmp" // Must be 4 bytes
@@ -29,9 +30,28 @@ export class CameraFeed extends EventEmitter
     {
         super();
         Object.assign(this._options, options);
+        if (this._options.HttpsServer === undefined )
+        {
+            console.log("CameraFeed requires an https server.");
+            return;
+        }
 
-        this._server = new WebSocketServer({ port: this._options.Port });
-        this._server.on("connection", (socket : WebSocket, request : any) => this.onConnect(this, socket, request));
+        this._socketServer = new WebSocketServer({noServer: true});
+        this._options.HttpsServer.on("upgrade", (request, socket, head) =>
+        {
+            if (request.url === undefined)
+            {
+                return;
+            }
+
+            const { pathname } = new URL(request.url, 'wss://do.not.care');
+
+            if (pathname === "/camera")
+            {
+                this._socketServer?.handleUpgrade(request, socket, head, socket => this.onConnect(this, socket, request));
+                return;
+            }
+        });
     }
 
     public Start(width : number, height : number)
@@ -79,7 +99,7 @@ export class CameraFeed extends EventEmitter
     public Stop()
     {
         this._connections.removeAll();
-        this._server?.close();
+        this._socketServer?.close();
         this._rtspProxy?.Stop();
     }
 
