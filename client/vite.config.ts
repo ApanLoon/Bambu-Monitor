@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
+import { readFileSync } from "node:fs";
 
 import { defineConfig, PluginOption } from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -55,6 +56,32 @@ export default defineConfig (( { mode } ) =>
     build:
     {
       outDir: '../server/dist/wwwroot'
+    },
+
+    server:
+    {
+      https:
+      {
+        "key":  readFileSync("../server/certificates/privatekey.pem"),
+        "cert": readFileSync("../server/certificates/certificate.pem")
+      },
+      proxy:
+      {
+        "/api":
+        {
+          target: "wss://localhost:5005",
+          changeOrigin: true,
+          ws: true,
+          secure: false
+        },
+        "/camera":
+        {
+          target: "wss://localhost:5005",
+          changeOrigin: true,
+          ws: true,
+          secure: false
+        }
+      }
     }
   }
 });

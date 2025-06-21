@@ -47,6 +47,10 @@ The "server/logs" folder is the default location of the server log file.
 The "server/projectArchive" folder is the default location for storing the project files downloaded from the printer. When hosting the client with vite, this folder is also hosted statically so that the client can access the preview images.
 
 ## Running in dev mode
+1. Create certificates for the server in the server/certificates folder:
+    ```
+    openssl req -x509 -newkey rsa:2048 -nodes -sha256 -subj '/CN=localhost' -keyout privatekey.pem -out certificate.pem
+    ```
 1. In the server folder, run "npm run dev". This starts the server and monitors source files for changes.
 1. In the client folder, run "npm run dev". This hosts the vue application with vite and uses a config.json that points to the local server
 
@@ -55,6 +59,11 @@ To build a docker image of the Bambu Monitor,
 1. Clear out the "server/dist/wwwroot" folder manually or add "--emptyOutDir" to your build command.
 1. In the client folder, run "npm run build". This will create the client files in the "server/dist/wwwroot" folder
 1. In the server folder, run "npm run build". This will build the server application into "server/dist"
+1. Make sure that you have your certificates for the volume mounts in the correct place, this docker-compose file expects them to be in ```/usr/syno/etc/certificate/_archive/xxxx/cert.pem``` and ```/usr/syno/etc/certificate/_archive/xxxx/privkey.pem``` which, when xxxx is replaced with the actual random sting, represents where certificates are stored on a Synology DSM NAS. Change these paths to where the certificates are in your deployment
+1. Optional: Set up docker context
+    1. Create context width ```docker context create --docker host=ssh://<user>@<host> --description "My NAS" <my-context>```
+    1. Store the password to your user width ```sshpass -p '<password>' ssh <user>@<host>```
+    1. Switch to the docker context to your depolyment with ```docker context use <my-context>``` 
 1. In the server folder run "docker-compose up -d --build". 
 
 ## Configuration
