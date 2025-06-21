@@ -52,7 +52,7 @@ The "server/projectArchive" folder is the default location for storing the proje
     openssl req -x509 -newkey rsa:2048 -nodes -sha256 -subj '/CN=localhost' -keyout privatekey.pem -out certificate.pem
     ```
 1. In the server folder, run "npm run dev". This starts the server and monitors source files for changes.
-1. In the client folder, run "npm run dev". This hosts the vue application with vite and uses a config.json that points to the local server
+1. In the client folder, run "npm run dev". This hosts the vue application with vite, vite also acts as a proxy to the local server for the api and camera
 
 ## Docker
 To build a docker image of the Bambu Monitor,

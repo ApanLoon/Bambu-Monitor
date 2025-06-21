@@ -39,7 +39,7 @@ export default defineConfig (( { mode } ) =>
         publicDirectories,
         {
           ssr: false,
-          ignore: mode === "development" ? [] : ["public/config.json"]
+          ignore: []
         }) as PluginOption
     ],
 
