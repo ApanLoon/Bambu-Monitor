@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { inject, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useKeycloak } from "@josempgon/vue-keycloak";
 import { type IBambuMonitorClient} from "@/plugins/IBambuMonitorClient";
 import { LogLevel } from "../../../server/src/shared/LogLevel";
-
 import StyledSelect from "./generic/StyledSelect.vue";
-import { useRouter } from "vue-router";
+import IconLogout from "./icons/IconLogout.vue";
 
 const router = useRouter();
+const { keycloak, isAuthenticated, decodedToken } = useKeycloak();
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)
 {
   throw new Error ("[Header] Setup: No BambuMonitorClient plugin found.");
 }
+
 
 const LogLevelString = computed<string>(() => LogLevel[bambuMonitorClient.LogLevel.value]);
 const LogLevels = computed(()=>Object.keys(LogLevel).filter(x => isNaN(Number(x)) === true));
@@ -27,8 +30,13 @@ const selectLogLevel = function (selected : string)
 <template>
   <div>
     <local-header>
-      <img alt="Bambu Monitor logo" class="logo" src="@/assets/logo.svg" width="50" height="50" />
-      <div>
+      <local-app-logo><img alt="Bambu Monitor logo" class="logo" src="@/assets/logo.svg" width="50" height="50" /></local-app-logo>
+      <local-app-title>Bambu Monitor</local-app-title>
+      <local-backend-connected>Backend is {{ bambuMonitorClient.IsConnected.value === true ? "" : "not" }} connected</local-backend-connected>
+      <local-user-name v-if="isAuthenticated">{{ decodedToken.given_name }} {{ decodedToken.family_name }} <button @click="keycloak?.logout()"><IconLogout></IconLogout></button></local-user-name>
+      <local-printer-connected>Printer is {{ bambuMonitorClient.IsPrinterConnected.value === true ? "" : "not" }} connected</local-printer-connected>
+      <local-log-level>Log level: <StyledSelect :options="LogLevels" :default="LogLevelString" @change="selectLogLevel"></StyledSelect></local-log-level>
+      <!-- <div>
         <h1>Bambu Monitor</h1>
         <div>Backend is {{ bambuMonitorClient.IsConnected.value === true ? "" : "not" }} connected</div>
         <div v-if="bambuMonitorClient.IsConnected.value">Printer is {{ bambuMonitorClient.IsPrinterConnected.value === true ? "" : "not" }} connected
@@ -37,7 +45,7 @@ const selectLogLevel = function (selected : string)
             <StyledSelect :options="LogLevels" :default="LogLevelString" @change="selectLogLevel"></StyledSelect>
           </local-log-level>
         </div>
-      </div>
+      </div> -->
     </local-header>
     <nav>
         <RouterLink to="/">Status</RouterLink>
@@ -53,17 +61,45 @@ const selectLogLevel = function (selected : string)
 <style scoped>
 local-header
 {
-  display: flex;
+  display: grid;
+  grid-template-areas: "app-logo app-title         ."
+                       "app-logo backend-connected user-name"
+                       "app-logo printer-connected log-level";
+  grid-template-columns: auto 1fr 1fr;
 }
 
+local-app-logo
+{
+  grid-area: app-logo;
+}
+local-app-title
+{
+  grid-area: app-title;
+  font-size: 0.8rem;
+  margin-top: -0.2em; /* TODO: This is sensitive to the font-family */
+}
+local-backend-connected
+{
+  grid-area: backend-connected;
+}
+local-user-name
+{
+  grid-area: user-name;
+}
+local-user-name button
+{
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  align-self: center;
+}
+local-printer-connected
+{
+  grid-area: printer-connected;
+}
 local-log-level
 {
-  padding-left: 2rem;
-}
-
-h1
-{
-  margin-top: -0.2em; /* TODO: This is sensitive to the font-family */
+  grid-area: log-level;
 }
 
 nav
