@@ -58,6 +58,14 @@ export default defineConfig (( { mode } ) =>
       outDir: '../server/dist/wwwroot'
     },
 
+    esbuild:
+    {
+      supported:
+      {
+        "top-level-await": true // Assume that browsers can handle this
+      }
+    },
+
     server:
     {
       https:

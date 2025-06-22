@@ -67,19 +67,31 @@ To build a docker image of the Bambu Monitor,
 1. In the server folder run "docker-compose up -d --build". 
 
 ## Configuration
+### Server
 The server is configured using environment variables. Typically use a .env (docker.env for the container) file with the following variables:
 
-| Variable       | Description | Default value |
-| -------------- | ----------- | ------------- |
-| IS_DEVELOPMENT | When TRUE, the server will modify some paths to properly host the client and project files            | FALSE        |
-| X1C_HOST       | IP-address or host name of the printer to connect to                                                  |              |
-| ~~X1C_PORT~~   | ~~Port number for the MQTT server on the printer~~                                                    | 8883         |
-| X1C_PASSWORD   | Password for the printer (as shown in "Settings/General/LAN Only/Access code" on the printer display) |              |
-| X1C_SERIAL     | The serial number of the printer (As shown in "Settings/General/Device info" on the printer display)  |              |
-| WEB_HOST       | Host name or IP-address of the server, only used for server log message                               | localhost    |
-| WEB_PORT       | Port number of the server hosting the client (HTTPS only)                                             | 3000         |
-| DB_HOST        | Host name or IP-address of the mongodb database storing the job history                               |              |
-| DB_PORT        | Port of the mongodb database                                                                          | 27017        |
-| DB_NAME        | Name of the database                                                                                  | BambuMonitor |
-| DB_USER        | Username for accessing the database                                                                   | bambumonitor |
-| DB_PWD         | Password for accessing the database                                                                   |              |
+| Variable       | Description                                                                                           | Default value |
+| -------------- | ----------------------------------------------------------------------------------------------------- | ------------- |
+| IS_DEVELOPMENT | When TRUE, the server will modify some paths to properly host the client and project files            | FALSE         |
+| X1C_HOST       | IP-address or host name of the printer to connect to                                                  |               |
+| ~~X1C_PORT~~   | ~~Port number for the MQTT server on the printer~~                                                    | 8883          |
+| X1C_PASSWORD   | Password for the printer (as shown in "Settings/General/LAN Only/Access code" on the printer display) |               |
+| X1C_SERIAL     | The serial number of the printer (As shown in "Settings/General/Device info" on the printer display)  |               |
+| WEB_HOST       | Host name or IP-address of the server, only used for server log message                               | localhost     |
+| WEB_PORT       | Port number of the server hosting the client (HTTPS only)                                             | 3000          |
+| DB_HOST        | Host name or IP-address of the mongodb database storing the job history                               |               |
+| DB_PORT        | Port of the mongodb database                                                                          | 27017         |
+| DB_NAME        | Name of the database                                                                                  | BambuMonitor  |
+| DB_USER        | Username for accessing the database                                                                   | bambumonitor  |
+| DB_PWD         | Password for accessing the database                                                                   |               |
+
+### Client
+When building the client, these environment variables are baked into the compiled bundles:
+
+| Variable             | Description                                                        | Default value |
+| -------------------- | ------------------------------------------------------------------ | ------------- |
+| VITE_KEYCLOAK_URL    | Full URL to the keycloak server used for authentication            |               |
+| VITE_KEYCLOAK_REALM  | The keycloak realm to look for the client in                       |               |
+| VITE_KEYCLOAK_CLIENT | The client id to authenticate for                                  |               |
+
+Typically these are stored in .env.development.local and .env.production.local for the respective modes.
