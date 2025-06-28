@@ -2,6 +2,7 @@
 import { inject, onMounted } from "vue";
 import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
 import { JobState, type Job } from "../../../../server/src/shared/Job";
+import StringInput from "../generic/StringInput.vue";
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)
@@ -63,6 +64,7 @@ function round(value: number, places : number)
             fail:     job.State === JobState.Failed
         }">{{ status(job) }}</local-state>
         <local-name>{{ job.Name }}</local-name>
+        <local-comment><StringInput :value="job.Comment"></StringInput></local-comment>
         <local-duration>{{  duration(job) }}</local-duration>
         <local-plate>{{ job.Project?.PlateName }}</local-plate>
         <local-start>{{ job.StartTime.toLocaleString() }}</local-start>
@@ -94,11 +96,12 @@ local-job
     display: grid;
     grid-template-areas: "img state    ."
                          "img name     name"
+                         "img comment  comment"
                          "img duration printer"
                          "img plate    start"
                          ;
     grid-template-columns: 20% auto auto;
-    grid-template-rows: auto 1fr auto auto;
+    grid-template-rows: auto auto 1fr auto auto;
 
     padding-top: 0.5rem;
     border-top: 1px solid var(--color-border);
@@ -129,6 +132,10 @@ local-name
 {
     grid-area: name;
     font-size: 1rem;
+}
+local-comment
+{
+    grid-area: comment;
 }
 local-duration
 {
