@@ -74,8 +74,8 @@ export class Api extends EventEmitter
                 case BambuMonitorServerMessage.SetPrinterLogLevel: self.emit(ApiEvent.SetPrinterLogLevel, msg.Level);                 break;
                 case BambuMonitorServerMessage.RequestFullLog:     self.emit(ApiEvent.RequestFullLog);                                break;
                 case BambuMonitorServerMessage.RequestJobHistory:  self.emit(ApiEvent.RequestJobHistory);                             break;
-                case BambuMonitorServerMessage.SaveJobComment:     self.emit(ApiEvent.SaveJobComment,   msg.Job, msg.NewComment);     break;
-                case BambuMonitorServerMessage.SaveJobRecipient:   self.emit(ApiEvent.SaveJobRecipient, msg.Job, msg.NewRecipient);   break;
+                case BambuMonitorServerMessage.SaveJobComment:     self.emit(ApiEvent.SaveJobComment,   msg.JobId, msg.NewComment);   break;
+                case BambuMonitorServerMessage.SaveJobRecipient:   self.emit(ApiEvent.SaveJobRecipient, msg.JobId, msg.NewRecipient); break;
             }
         },
         (_event: any, connection: Connection) =>

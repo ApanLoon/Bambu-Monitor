@@ -2,7 +2,6 @@ import { MongoClient } from "mongodb";
 import { Logger } from "../Logger/Logger.js";
 import EventEmitter from "events";
 import { Job, JobState } from "../shared/Job.js";
-import { JobEvent } from "../JobManager/JobManager.js";
 
 export class DatabaseOptions
 {
@@ -83,6 +82,22 @@ export class Database extends EventEmitter
       this._options.Logger?.Log(`[Database] GetJobHistory failed. ${err}`);
     }
     return null;
+  }
+
+  public async GetJobById (id : string ) : Promise<Job | null>
+  {
+  try
+    {
+      const db = this._client.db();
+      const collection = db.collection("Job");
+      return collection.findOne<Job> ({Id: id});
+    }
+    catch (err)
+    {
+      this._options.Logger?.Log(`[Database] GetJobById failed. ${err}`);
+    }
+    return null;
+
   }
 
   public async UpdateJob (job : Job | null)

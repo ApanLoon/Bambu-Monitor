@@ -53,14 +53,14 @@ const round = (value: number, places : number) =>
     return (Math.round ((value + Number.EPSILON) * multiplier) / multiplier); 
 }
 
-const saveComment = (job : Job, newComment : string) =>
+const saveComment = (jobId: string, newComment : string) =>
 {
-    bambuMonitorClient.SaveJobComment(job, newComment);
+    bambuMonitorClient.SaveJobComment(jobId, newComment);
 }
 
-const saveRecipient = (job : Job, newRecipient : string) =>
+const saveRecipient = (jobId: string, newRecipient : string) =>
 {
-    bambuMonitorClient.SaveJobRecipient(job, newRecipient);
+    bambuMonitorClient.SaveJobRecipient(jobId, newRecipient);
 }
 </script>
 
@@ -73,9 +73,9 @@ const saveRecipient = (job : Job, newRecipient : string) =>
             success:  job.State === JobState.Finished,
             fail:     job.State === JobState.Failed
         }">{{ status(job) }}</local-state>
-        <local-recipient><StringInput :rightAlign="true" :value="job.Recipient" @change="newRecipient => saveRecipient(job, newRecipient)"></StringInput></local-recipient>
+        <local-recipient><StringInput :rightAlign="true" :value="job.Recipient" @change="newRecipient => saveRecipient(job.Id, newRecipient)"></StringInput></local-recipient>
         <local-name>{{ job.Name }}</local-name>
-        <local-comment><StringInput :multiLine="true" :value="job.Comment" @change="newComment => saveComment(job, newComment)"></StringInput></local-comment>
+        <local-comment><StringInput :multiLine="true" :value="job.Comment" @change="newComment => saveComment(job.Id, newComment)"></StringInput></local-comment>
         <local-duration>{{  duration(job) }}</local-duration>
         <local-plate>{{ job.Project?.PlateName }}</local-plate>
         <local-start>{{ job.StartTime.toLocaleString() }}</local-start>

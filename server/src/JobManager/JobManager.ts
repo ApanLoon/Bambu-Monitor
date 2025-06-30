@@ -120,7 +120,7 @@ export class JobManager extends EventEmitter
         {
             this.CurrentJob.StopTime = new Date();
             this.CurrentJob.State = status.gcode_state === GCodeState.Failed ? JobState.Failed : JobState.Finished;
-            this.emit (JobEvent.JobUpdated, this.CurrentJob); // NOTE: This will hopefully trigger a database update. TODO: Woiuld it be better to explicitly call the database from here when creating, updating or stopping jobs? 
+            this.emit (JobEvent.JobUpdated, this.CurrentJob); // NOTE: This will hopefully trigger a database update. TODO: Would it be better to explicitly call the database from here when creating, updating or stopping jobs? 
             this.CancelCurrentJob();
         }
     }
@@ -140,14 +140,29 @@ export class JobManager extends EventEmitter
         return await this._options.Database?.GetJobHistory() ?? null;
     }
 
-    public async SaveJobComment(job: Job, newComment: string)
+    public async GetJobById(id : string) : Promise<Job | null>
     {
+        return await this._options.Database?.GetJobById(id) ?? null;
+    }
+
+    public async SaveJobComment(jobId: string, newComment: string)
+    {
+        let job = await this.GetJobById (jobId);
+        if (job === null)
+        {
+            return;
+        }
         job.Comment = newComment;
         await this._options.Database?.UpdateJob(job);
     }
     
-    public async SaveJobRecipient(job: Job, newRecipient: string)
+    public async SaveJobRecipient(jobId: string, newRecipient: string)
     {
+        let job = await this.GetJobById (jobId);
+        if (job === null)
+        {
+            return;
+        }
         job.Recipient = newRecipient;
         await this._options.Database?.UpdateJob(job);
     }

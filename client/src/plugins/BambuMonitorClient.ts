@@ -207,22 +207,22 @@ export class BambuMonitorClient implements IBambuMonitorClient
         }));
     }
 
-    public SaveJobComment(job: Job, newComment: string)
+    public SaveJobComment(jobId: string, newComment: string)
     {
         this._socket?.send(JSON.stringify(
         {
             Type:       BambuMonitorServerMessage.SaveJobComment,
-            Job:        job,
+            JobId:      jobId,
             NewComment: newComment
         }));
     }
 
-    public SaveJobRecipient(job: Job, newRecipient: string)
+    public SaveJobRecipient(jobId: string, newRecipient: string)
     {
         this._socket?.send(JSON.stringify(
         {
             Type:         BambuMonitorServerMessage.SaveJobRecipient,
-            Job:          job,
+            JobId:        jobId,
             NewRecipient: newRecipient
         }));
     }

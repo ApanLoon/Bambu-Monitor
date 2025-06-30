@@ -119,8 +119,8 @@ api.on(ApiEvent.GetPrinterLogLevel,       ()                                 => 
 api.on(ApiEvent.SetPrinterLogLevel,       level                              => bambuClient.SetLogLevel (level));
 api.on(ApiEvent.RequestFullLog,           ()                                 => logger.SendFullLog ());
 api.on(ApiEvent.RequestJobHistory,  async ()                                 => api.sendJobHistory (await jobManager.GetJobHistory()));
-api.on(ApiEvent.SaveJobComment,     async (job : Job, newComment   : string) => jobManager.SaveJobComment   (job, newComment));
-api.on(ApiEvent.SaveJobRecipient,   async (job : Job, newRecipient : string) => jobManager.SaveJobRecipient (job, newRecipient));
+api.on(ApiEvent.SaveJobComment,     async (jobId : string, newComment   : string) => jobManager.SaveJobComment   (jobId, newComment));
+api.on(ApiEvent.SaveJobRecipient,   async (jobId : string, newRecipient : string) => jobManager.SaveJobRecipient (jobId, newRecipient));
 
 database.on(DatabaseEvent.JobChanged, (job : Job) => api.sendJob (job));
 
