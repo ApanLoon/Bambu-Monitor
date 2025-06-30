@@ -10,7 +10,7 @@ if (bambuMonitorClient === undefined)
   throw new Error ("[HistoryPage] Setup: No BambuMonitorClient plugin found.");
 }
 
-function status(job : Job)
+const status = (job : Job ) =>
 {
     switch (job.State)
     {
@@ -25,7 +25,7 @@ function status(job : Job)
     }
 }
 
-function duration (job : Job)
+const duration = (job : Job) =>
 {
     if (job.StopTime == null )
     {
@@ -47,10 +47,15 @@ function duration (job : Job)
     return `${round(diff, 2)} days`;
 }
 
-function round(value: number, places : number)
+const round = (value: number, places : number) =>
 {
     const multiplier = Math.pow(10, places);
     return (Math.round ((value + Number.EPSILON) * multiplier) / multiplier); 
+}
+
+const saveComment = (job : Job, newComment : string) =>
+{
+    bambuMonitorClient.SaveJobComment(job, newComment);
 }
 </script>
 
@@ -64,7 +69,7 @@ function round(value: number, places : number)
             fail:     job.State === JobState.Failed
         }">{{ status(job) }}</local-state>
         <local-name>{{ job.Name }}</local-name>
-        <local-comment><StringInput :value="job.Comment"></StringInput></local-comment>
+        <local-comment><StringInput :multiLine="true" :value="job.Comment" @change="newComment => saveComment(job, newComment)"></StringInput></local-comment>
         <local-duration>{{  duration(job) }}</local-duration>
         <local-plate>{{ job.Project?.PlateName }}</local-plate>
         <local-start>{{ job.StartTime.toLocaleString() }}</local-start>
@@ -104,6 +109,7 @@ local-job
     grid-template-rows: auto auto 1fr auto auto;
 
     padding-top: 0.5rem;
+    margin-right: 1rem;
     border-top: 1px solid var(--color-border);
     overflow: auto;
 }

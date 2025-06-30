@@ -20,6 +20,47 @@ export const JobEvent = Object.freeze (
 
 export class JobManager extends EventEmitter
 {
+    // // Update current job:
+    // var noChange = false;
+    // switch (change.path)
+    // {
+    //     case "status.gcode_start_time": 
+    //         this._currentJob.startTime = new Date();
+    //         this._currentJob.startTime.setTime (Number(change.newValue));
+    //     break;
+    //     case "status.gcode_file":
+    //         this._currentJob.gcodeName = change.newValue !== "" ? change.newValue : this._currentJob.gcodeName;
+    //     break; 
+    //     case "status.gcode_state":
+    //         this._currentJob.state = change.newValue;
+    //     break; 
+    //     case "status.subtask_name":
+    //         this._currentJob.name = change.newValue;
+    //     break;
+    //     default:
+    //         noChange = true;
+    //     break;
+    // }
+    // if (noChange === true)
+    // {
+    //     return;
+    // }
+    // if (   this._currentJob.state === GCodeState.Finish
+    //     || this._currentJob.state === GCodeState.Idle
+    // )
+    // {
+    //     this.emit (JobEvent.JobCompleted, this._currentJob);
+    //     this._currentJob = null;
+    //     return;
+    // }
+    // if (this._currentJob.state === GCodeState.Failed)
+    // {
+    //     this.emit (JobEvent.JobFailed, this._currentJob);
+    //     this._currentJob = null;
+    //     return;
+    // }
+    // this.emit (JobEvent.JobUpdated, this._currentJob);
+    
     public CurrentJob : Job | null = null;
 
     private _options : JobManagerOptions = new JobManagerOptions;
@@ -98,6 +139,19 @@ export class JobManager extends EventEmitter
     {
         return await this._options.Database?.GetJobHistory() ?? null;
     }
+
+    public async SaveJobComment(job: Job, newComment: string)
+    {
+        job.Comment = newComment;
+        await this._options.Database?.UpdateJob(job);
+    }
+    
+    public async SaveJobRecipient(job: Job, newRecipient: string)
+    {
+        job.Recipient = newRecipient;
+        await this._options.Database?.UpdateJob(job);
+    }
+    
 
     public HandleChange(change : Change)
     {

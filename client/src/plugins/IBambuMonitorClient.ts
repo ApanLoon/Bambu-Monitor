@@ -34,4 +34,6 @@ export interface IBambuMonitorClient
 
     RequestJobHistory() : void;
     RequestFullLog() : void;
+
+    SaveJobComment(job: Job, newComment: string) : void;
 }

@@ -6,7 +6,9 @@ export const BambuMonitorServerMessage = Object.freeze (
   GetPrinterLogLevel: "GetPrinterLogLevel",
   SetPrinterLogLevel: "SetPrinterLogLevel",
   RequestFullLog:     "RequestFullLog",
-  RequestJobHistory:  "RequestJobHistory"
+  RequestJobHistory:  "RequestJobHistory",
+  SaveJobComment:     "SaveJobComment",
+  SaveJobRecipient:   "SaveJobRecipient"
 });
 
 // Messages sent by the server to the client.
@@ -17,5 +19,6 @@ export const BambuMonitorClientMessage = Object.freeze (
   PrinterLogLevel:         "PrinterLogLevel",
   MessageLogged:           "MessageLogged",
   CurrentJob:              "CurrentJob",
-  JobHistory:              "JobHistory"
+  JobHistory:              "JobHistory",
+  JobUpdated:              "JobUpdated"
 });
