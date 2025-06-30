@@ -110,6 +110,7 @@ export class BambuMonitorClient implements IBambuMonitorClient
                 case BambuMonitorClientMessage.MessageLogged:           this.Log.value.push (msg.Message);                         break;
                 case BambuMonitorClientMessage.CurrentJob:              this.UpdateCurrentJob (msg.Job);                           break;
                 case BambuMonitorClientMessage.JobHistory:              this.UpdateJobHistory (msg.Jobs);                          break;
+                case BambuMonitorClientMessage.JobUpdated:              this.jobUpdated (msg.Job);                                 break;
             }
         });
 
@@ -145,7 +146,6 @@ export class BambuMonitorClient implements IBambuMonitorClient
         {
             job.StartTime = new Date(job.StartTime);
             job.StopTime = job.StopTime == null ? null : new Date(job.StopTime);
-    
         });
         this.JobHistory.value = jobs;
     }
@@ -157,7 +157,22 @@ export class BambuMonitorClient implements IBambuMonitorClient
         this.SdCardState.value = this.HomeFlag.value.sdCardState();    
     }
 
-    GetState(): void
+    private jobUpdated(updatedJob : Job)
+    {
+        let job = this.JobHistory.value.find (x => x.Id === updatedJob.Id);
+        if (job === undefined)
+        {
+            this.JobHistory.value.push (updatedJob);
+        }
+        else
+        {
+            Object.assign(job, updatedJob);
+            job.StartTime = new Date(job.StartTime);
+            job.StopTime = job.StopTime == null ? null : new Date(job.StopTime);
+        }
+    }
+
+    public GetState(): void
     {
         this._socket?.send(JSON.stringify(
         {
@@ -165,7 +180,7 @@ export class BambuMonitorClient implements IBambuMonitorClient
         }));
     }
 
-    SetPrinterLogLevel(level : LogLevel)
+    public SetPrinterLogLevel(level : LogLevel)
     {
         this._socket?.send(JSON.stringify(
         {
@@ -174,7 +189,7 @@ export class BambuMonitorClient implements IBambuMonitorClient
         }));
     }
 
-    RequestJobHistory()
+    public RequestJobHistory()
     {
         this.Log.value = [];
         this._socket?.send(JSON.stringify(
@@ -183,12 +198,32 @@ export class BambuMonitorClient implements IBambuMonitorClient
         }));
     }
 
-    RequestFullLog()
+    public RequestFullLog()
     {
         this.Log.value = [];
         this._socket?.send(JSON.stringify(
         {
             Type: BambuMonitorServerMessage.RequestFullLog
+        }));
+    }
+
+    public SaveJobComment(jobId: string, newComment: string)
+    {
+        this._socket?.send(JSON.stringify(
+        {
+            Type:       BambuMonitorServerMessage.SaveJobComment,
+            JobId:      jobId,
+            NewComment: newComment
+        }));
+    }
+
+    public SaveJobRecipient(jobId: string, newRecipient: string)
+    {
+        this._socket?.send(JSON.stringify(
+        {
+            Type:         BambuMonitorServerMessage.SaveJobRecipient,
+            JobId:        jobId,
+            NewRecipient: newRecipient
         }));
     }
 }

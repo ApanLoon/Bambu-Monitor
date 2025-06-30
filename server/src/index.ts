@@ -9,7 +9,8 @@ import { BambuClient, BambuClientEvent } from "./BambuClient/BambuClient.js";
 import { type Change } from "./BambuClient/CompareObjects.js"
 import { JobEvent, JobManager } from "./JobManager/JobManager.js";
 import { Logger, LoggerEvent } from "./Logger/Logger.js";
-import { Database } from "./Database/Database.js";
+import { Database, DatabaseEvent } from "./Database/Database.js";
+import { Job } from "./shared/Job.js";
 
 dotenv.config();
 
@@ -112,12 +113,16 @@ bambuClient.on(BambuClientEvent.LedCtrl,          ledCtrl        => console.log(
 bambuClient.on(BambuClientEvent.LogLevelChanged,  level          => api.sendPrinterLogLevel(level));
 bambuClient.on(BambuClientEvent.ProjectLoaded,    (project, job) => jobManager.HandleProjectLoaded(project, job));
 
-api.on(ApiEvent.GetState,                 sendState);
-api.on(ApiEvent.SetLight,                 isOn  => console.log(isOn));
-api.on(ApiEvent.GetPrinterLogLevel,       ()    => api.sendPrinterLogLevel(bambuClient.LogLevel));
-api.on(ApiEvent.SetPrinterLogLevel,       level => bambuClient.SetLogLevel(level));
-api.on(ApiEvent.RequestFullLog,           ()    => logger.SendFullLog());
-api.on(ApiEvent.RequestJobHistory,  async ()    => api.sendJobHistory(await jobManager.GetJobHistory()))
+api.on(ApiEvent.GetState,                                                       sendState);
+api.on(ApiEvent.SetLight,                 isOn                               => console.log (isOn));
+api.on(ApiEvent.GetPrinterLogLevel,       ()                                 => api.sendPrinterLogLevel (bambuClient.LogLevel));
+api.on(ApiEvent.SetPrinterLogLevel,       level                              => bambuClient.SetLogLevel (level));
+api.on(ApiEvent.RequestFullLog,           ()                                 => logger.SendFullLog ());
+api.on(ApiEvent.RequestJobHistory,  async ()                                 => api.sendJobHistory (await jobManager.GetJobHistory()));
+api.on(ApiEvent.SaveJobComment,     async (jobId : string, newComment   : string) => jobManager.SaveJobComment   (jobId, newComment));
+api.on(ApiEvent.SaveJobRecipient,   async (jobId : string, newRecipient : string) => jobManager.SaveJobRecipient (jobId, newRecipient));
+
+database.on(DatabaseEvent.JobChanged, (job : Job) => api.sendJob (job));
 
 logger.on(LoggerEvent.MessageLogged, message => api.sendLogMessage(message));
 

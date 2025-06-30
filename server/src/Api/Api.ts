@@ -21,7 +21,9 @@ export const ApiEvent = Object.freeze (
     GetPrinterLogLevel: "getprinterloglevel",
     SetPrinterLogLevel: "setprinterloglevel",
     RequestFullLog:     "requestfulllog",
-    RequestJobHistory:  "requestjobHistory"
+    RequestJobHistory:  "requestjobHistory",
+    SaveJobComment:     "saveJobComment",
+    SaveJobRecipient:   "saveJobRecipient"
 });
     
 
@@ -66,12 +68,14 @@ export class Api extends EventEmitter
             const msg = JSON.parse(data);
             switch (msg.Type)
             {
-                case BambuMonitorServerMessage.GetState:           self.emit(ApiEvent.GetState);                       break;
-                case BambuMonitorServerMessage.SetLight:           self.emit(ApiEvent.SetLight, msg.isOn);             break;
-                case BambuMonitorServerMessage.GetPrinterLogLevel: self.emit(ApiEvent.GetPrinterLogLevel);             break;
-                case BambuMonitorServerMessage.SetPrinterLogLevel: self.emit(ApiEvent.SetPrinterLogLevel, msg.Level);  break;
-                case BambuMonitorServerMessage.RequestFullLog:     self.emit(ApiEvent.RequestFullLog);                 break;
-                case BambuMonitorServerMessage.RequestJobHistory:  self.emit(ApiEvent.RequestJobHistory);              break;
+                case BambuMonitorServerMessage.GetState:           self.emit(ApiEvent.GetState);                                      break;
+                case BambuMonitorServerMessage.SetLight:           self.emit(ApiEvent.SetLight, msg.isOn);                            break;
+                case BambuMonitorServerMessage.GetPrinterLogLevel: self.emit(ApiEvent.GetPrinterLogLevel);                            break;
+                case BambuMonitorServerMessage.SetPrinterLogLevel: self.emit(ApiEvent.SetPrinterLogLevel, msg.Level);                 break;
+                case BambuMonitorServerMessage.RequestFullLog:     self.emit(ApiEvent.RequestFullLog);                                break;
+                case BambuMonitorServerMessage.RequestJobHistory:  self.emit(ApiEvent.RequestJobHistory);                             break;
+                case BambuMonitorServerMessage.SaveJobComment:     self.emit(ApiEvent.SaveJobComment,   msg.JobId, msg.NewComment);   break;
+                case BambuMonitorServerMessage.SaveJobRecipient:   self.emit(ApiEvent.SaveJobRecipient, msg.JobId, msg.NewRecipient); break;
             }
         },
         (_event: any, connection: Connection) =>
@@ -122,7 +126,7 @@ export class Api extends EventEmitter
         {
             Type: BambuMonitorClientMessage.MessageLogged,
             Message: message
-        }));    
+        }));
     }
 
     sendCurrentJob (job : Job | null)
@@ -131,7 +135,7 @@ export class Api extends EventEmitter
         {
             Type: BambuMonitorClientMessage.CurrentJob,
             Job: job
-        }));                
+        }));
     }
     
     sendJobHistory (jobs : Array<Job> | null)
@@ -140,6 +144,15 @@ export class Api extends EventEmitter
         {
             Type: BambuMonitorClientMessage.JobHistory,
             Jobs: jobs ?? []
-        }));                
+        }));
+    }
+
+    sendJob (job : Job)
+    {
+        this.connections.sendToAll(JSON.stringify(
+        {
+            Type: BambuMonitorClientMessage.JobUpdated,
+            Job: job
+        }));
     }
 }

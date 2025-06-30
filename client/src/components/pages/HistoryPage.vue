@@ -2,6 +2,7 @@
 import { inject, onMounted } from "vue";
 import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
 import { JobState, type Job } from "../../../../server/src/shared/Job";
+import StringInput from "../generic/StringInput.vue";
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)
@@ -9,7 +10,7 @@ if (bambuMonitorClient === undefined)
   throw new Error ("[HistoryPage] Setup: No BambuMonitorClient plugin found.");
 }
 
-function status(job : Job)
+const status = (job : Job ) =>
 {
     switch (job.State)
     {
@@ -24,7 +25,7 @@ function status(job : Job)
     }
 }
 
-function duration (job : Job)
+const duration = (job : Job) =>
 {
     if (job.StopTime == null )
     {
@@ -46,10 +47,20 @@ function duration (job : Job)
     return `${round(diff, 2)} days`;
 }
 
-function round(value: number, places : number)
+const round = (value: number, places : number) =>
 {
     const multiplier = Math.pow(10, places);
     return (Math.round ((value + Number.EPSILON) * multiplier) / multiplier); 
+}
+
+const saveComment = (jobId: string, newComment : string) =>
+{
+    bambuMonitorClient.SaveJobComment(jobId, newComment);
+}
+
+const saveRecipient = (jobId: string, newRecipient : string) =>
+{
+    bambuMonitorClient.SaveJobRecipient(jobId, newRecipient);
 }
 </script>
 
@@ -62,7 +73,9 @@ function round(value: number, places : number)
             success:  job.State === JobState.Finished,
             fail:     job.State === JobState.Failed
         }">{{ status(job) }}</local-state>
+        <local-recipient><StringInput :rightAlign="true" :value="job.Recipient" @change="newRecipient => saveRecipient(job.Id, newRecipient)"></StringInput></local-recipient>
         <local-name>{{ job.Name }}</local-name>
+        <local-comment><StringInput :multiLine="true" :value="job.Comment" @change="newComment => saveComment(job.Id, newComment)"></StringInput></local-comment>
         <local-duration>{{  duration(job) }}</local-duration>
         <local-plate>{{ job.Project?.PlateName }}</local-plate>
         <local-start>{{ job.StartTime.toLocaleString() }}</local-start>
@@ -92,15 +105,17 @@ local-container
 local-job
 {
     display: grid;
-    grid-template-areas: "img state    ."
+    grid-template-areas: "img state    recipient"
                          "img name     name"
+                         "img comment  comment"
                          "img duration printer"
                          "img plate    start"
                          ;
     grid-template-columns: 20% auto auto;
-    grid-template-rows: auto 1fr auto auto;
+    grid-template-rows: auto auto 1fr auto auto;
 
     padding-top: 0.5rem;
+    margin-right: 1rem;
     border-top: 1px solid var(--color-border);
     overflow: auto;
 }
@@ -125,10 +140,18 @@ local-state
     border-radius: 2rem;
     color: var(--color-text-highlight);
 }
+local-recipient
+{
+    grid-area: recipient;
+}
 local-name
 {
     grid-area: name;
     font-size: 1rem;
+}
+local-comment
+{
+    grid-area: comment;
 }
 local-duration
 {

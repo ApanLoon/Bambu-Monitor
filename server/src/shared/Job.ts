@@ -14,6 +14,8 @@ export class Job
     public StartTime : Date;
     public StopTime  : Date | null = null;
     public Name      : string;
+    public Comment   : string | undefined;
+    public Recipient : string | undefined;
     public GcodeName : string;
     public State     : JobState;
 
