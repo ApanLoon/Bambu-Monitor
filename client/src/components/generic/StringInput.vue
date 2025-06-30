@@ -17,7 +17,7 @@ const isEdit : Ref<boolean> = ref(false);
 
 const toggle = () =>
 {
-    if (isEdit === true)
+    if (isEdit.value === true)
     {
         change();
     }
@@ -25,7 +25,7 @@ const toggle = () =>
 }
 const change = () =>
 {
-    const input = document.getElementById (props.multiLine ? "input-multiline" : "input"); 
+    const input = document.getElementById (props.multiLine ? "input-multiline" : "input") as HTMLInputElement; 
     if (input === null)
     {
         return;
