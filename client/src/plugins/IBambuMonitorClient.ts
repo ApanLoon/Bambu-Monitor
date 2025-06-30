@@ -36,4 +36,5 @@ export interface IBambuMonitorClient
     RequestFullLog() : void;
 
     SaveJobComment(job: Job, newComment: string) : void;
+    SaveJobRecipient(job: Job, newRecipient: string) : void;
 }

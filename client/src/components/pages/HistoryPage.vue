@@ -57,6 +57,11 @@ const saveComment = (job : Job, newComment : string) =>
 {
     bambuMonitorClient.SaveJobComment(job, newComment);
 }
+
+const saveRecipient = (job : Job, newRecipient : string) =>
+{
+    bambuMonitorClient.SaveJobRecipient(job, newRecipient);
+}
 </script>
 
 <template>
@@ -68,6 +73,7 @@ const saveComment = (job : Job, newComment : string) =>
             success:  job.State === JobState.Finished,
             fail:     job.State === JobState.Failed
         }">{{ status(job) }}</local-state>
+        <local-recipient><StringInput :rightAlign="true" :value="job.Recipient" @change="newRecipient => saveRecipient(job, newRecipient)"></StringInput></local-recipient>
         <local-name>{{ job.Name }}</local-name>
         <local-comment><StringInput :multiLine="true" :value="job.Comment" @change="newComment => saveComment(job, newComment)"></StringInput></local-comment>
         <local-duration>{{  duration(job) }}</local-duration>
@@ -99,7 +105,7 @@ local-container
 local-job
 {
     display: grid;
-    grid-template-areas: "img state    ."
+    grid-template-areas: "img state    recipient"
                          "img name     name"
                          "img comment  comment"
                          "img duration printer"
@@ -133,6 +139,10 @@ local-state
     padding: 0 0.5rem;
     border-radius: 2rem;
     color: var(--color-text-highlight);
+}
+local-recipient
+{
+    grid-area: recipient;
 }
 local-name
 {

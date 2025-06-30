@@ -3,8 +3,9 @@ import { defineProps, defineEmits, ref, type Ref } from "vue";
 import IconEdit from "../icons/IconEdit.vue";
 const props = defineProps(
 {
-  value:     { type: String,  required: false },
-  multiLine: { type: Boolean, required: false, default: false }
+  value:      { type: String,  required: false },
+  multiLine:  { type: Boolean, required: false, default: false },
+  rightAlign: { type: Boolean, required: false, default: false }
 });
 
 const emit = defineEmits
@@ -37,13 +38,20 @@ const change = () =>
 
     emit("change", input.value);
 }
+const keyup = (event : KeyboardEvent) =>
+{
+    if (event.key === "Enter" || event.keyCode === 13)
+    {
+        toggle();
+    }
+}
 </script>
 
 <template>
     <local-container>
-        <local-read v-if="isEdit === false">{{ props.value }}</local-read>
-        <local-edit v-if="isEdit === true && props.multiLine === true"> <textarea          id="input-multiline" :value="props.value" @change="change" /></local-edit>
-        <local-edit v-if="isEdit === true && props.multiLine === false"><input type="text" id="input"           :value="props.value" @change="change" /></local-edit>
+        <local-read v-if="isEdit === false" :class="[{ ['right-align']: props.rightAlign }]">{{ props.value }}</local-read>
+        <local-edit v-if="isEdit === true && props.multiLine === true"> <textarea          id="input-multiline" :value="props.value" @change="change" :class="[{ ['right-align']: props.rightAlign }]" /></local-edit>
+        <local-edit v-if="isEdit === true && props.multiLine === false"><input type="text" id="input"           :value="props.value" @change="change" :class="[{ ['right-align']: props.rightAlign }]" @keyup="e => keyup(e)" /></local-edit>
         <button @click="toggle()"><IconEdit></IconEdit></button>
     </local-container>
 </template>
@@ -96,5 +104,10 @@ button
 button::active
 {
     outline: none;
+}
+.right-align
+{
+    text-align: right;
+    margin-left: auto;
 }
 </style>
