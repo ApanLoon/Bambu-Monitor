@@ -77,6 +77,7 @@ const saveRecipient = (jobId: string, newRecipient : string) =>
         <local-name>{{ job.Name }}</local-name>
         <local-comment><StringInput :multiLine="true" :value="job.Comment" @change="newComment => saveComment(job.Id, newComment)"></StringInput></local-comment>
         <local-duration>{{  duration(job) }}</local-duration>
+        <local-total-weight>{{ job.Project?.TotalWeight }}g</local-total-weight>
         <local-plate>{{ job.Project?.PlateName }}</local-plate>
         <local-start>{{ job.StartTime.toLocaleString() }}</local-start>
     </local-job>
@@ -108,7 +109,7 @@ local-job
     grid-template-areas: "img state    recipient"
                          "img name     name"
                          "img comment  comment"
-                         "img duration printer"
+                         "img duration total-weight"
                          "img plate    start"
                          ;
     grid-template-columns: 20% auto auto;
@@ -157,9 +158,9 @@ local-duration
 {
     grid-area: duration;
 }
-local-printer
+local-total-weight
 {
-    grid-area: printer;
+    grid-area: total-weight;
     justify-self: right;
 }
 local-plate
