@@ -22,7 +22,7 @@ export class Change
 export function CompareObjects (oldData : any, newData : any, path : string) : Array<Change>
 {
     let l : Array<Change> = [];
-    if (oldData === undefined || newData === undefined)
+    if (oldData == null || newData == null) // NOTE: The == is supposed to match both null and undefined
     {
         return l;
     }
