@@ -68,6 +68,7 @@ export class BambuFtpClient
             // Unzip 3mf file:
             let p = Path.parse(projectPath);
             let dstFolder = Path.join(p.dir, p.name); // Remove extension 3mf
+            const escapedDstFolder = Path.join(p.dir, encodeURIComponent(p.name)); // Use this for storing links to this folder
             await decompress(projectPath, dstFolder);
 
             let project : Project = new Project();
@@ -95,7 +96,7 @@ export class BambuFtpClient
             // Find the first plate that has a gcode file:
             const plate = plates.find((x : { gcode_file : string; thumbnail_file : string; }) => x.gcode_file !== "");
             project.PlateName = plate?.plater_name;
-            project.ThumbnailFile = Path.join(dstFolder, plate?.thumbnail_file);
+            project.ThumbnailFile = Path.join(escapedDstFolder, plate?.thumbnail_file);
 
 			this._options.Logger?.Log(`BambuFtpClient: File ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath} model settings read. Reading slice info...`);
 
