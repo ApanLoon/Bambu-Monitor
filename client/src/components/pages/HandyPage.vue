@@ -10,6 +10,7 @@ import Camera from "../Camera.vue";
 import Thermometer from "../generic/Thermometer.vue"
 
 import FilamentTray from "../ams/FilamentTray.vue"
+import type { Job } from "../../../../server/src/shared/Job";
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)
@@ -31,6 +32,12 @@ const status = computed<string>(() =>
   return `${Stage[bambuMonitorClient.Status.value.stg_cur]} (${bambuMonitorClient.Status.value.gcode_state})`;
 });
 
+// TODO: Move the thumbnail function somewhere to remove the need to duplicate it in the History page.
+const thumbnail = (job : Job) =>
+{
+    return job.Project?.ThumbnailFile ? job.Project?.ThumbnailFile : "DefaultProjectThumbnail.png";
+}
+
 const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.round(((value - min) / (max - min)) * 10 ) * 10;
 </script>
 
@@ -39,7 +46,7 @@ const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.r
     <Camera></Camera>
     <local-job class="box" v-if="bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.CurrentJob.value.Project != null && bambuMonitorClient.Status.value !== undefined">
       <local-job-image>
-        <img :src="bambuMonitorClient.CurrentJob.value.Project.ThumbnailFile" alt="Project Image" />
+        <img :src="thumbnail(bambuMonitorClient.CurrentJob.value)" alt="Project Image" />
       </local-job-image>
       <local-job-name>{{ bambuMonitorClient.CurrentJob.value.Name }}</local-job-name>
       <local-job-profile>{{ bambuMonitorClient.CurrentJob.value.Project.SettingsName }}</local-job-profile>

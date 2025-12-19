@@ -25,6 +25,12 @@ const status = (job : Job ) =>
     }
 }
 
+// TODO: Move the thumbnail function somewhere to remove the need to duplicate it in the Handy page.
+const thumbnail = (job : Job) =>
+{
+    return job.Project?.ThumbnailFile ? job.Project?.ThumbnailFile : "DefaultProjectThumbnail.png";
+}
+
 const duration = (job : Job) =>
 {
     if (job.StopTime == null )
@@ -67,7 +73,7 @@ const saveRecipient = (jobId: string, newRecipient : string) =>
 <template>
   <local-container>
     <local-job v-for="job in bambuMonitorClient.JobHistory.value">
-        <local-image><img :src="job.Project?.ThumbnailFile" alt="Project Image" /></local-image>
+        <local-image><img :src="thumbnail(job)" alt="Project Image" /></local-image>
         <local-state :class="{
             pending:  job.State === JobState.Started,
             success:  job.State === JobState.Finished,
