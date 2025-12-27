@@ -41,8 +41,8 @@ const thumbnail = (job : Job) =>
 const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.round(((value - min) / (max - min)) * 10 ) * 10;
 </script>
 
-<template v-if="bambuMonitorClient.IsConnected.value && bambuMonitorClient.IsPrinterConnected.value">
-  <local-container>
+<template>
+  <local-container v-if="bambuMonitorClient.IsConnected.value === true && bambuMonitorClient.IsPrinterConnected.value === true">
     <Camera></Camera>
     <local-job class="box" v-if="bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.CurrentJob.value.Project != null && bambuMonitorClient.Status.value !== undefined">
       <local-job-image>
