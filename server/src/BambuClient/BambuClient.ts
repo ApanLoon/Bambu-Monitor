@@ -195,6 +195,51 @@ export class BambuClient extends EventEmitter
     this.emit(BambuClientEvent.LogLevelChanged, this.LogLevel);
   }
 
+  public JobPause()
+  {
+    this._options.Logger?.Log(`[BambuClient] JobPause`);
+    const msg = 
+    {
+      "print":
+      {
+        "sequence_id": "0",
+        "command": "pause",
+        "param": "", // Always empty
+      }
+    };
+    this._client?.publish(`device/${this._options.Serial}/request`, JSON.stringify(msg));
+  }
+
+  public JobResume()
+  {
+    this._options.Logger?.Log(`[BambuClient] JobResume`);
+    const msg = 
+    {
+      "print":
+      {
+        "sequence_id": "0",
+        "command": "resume",
+        "param": "", // Always empty
+      }
+    };
+    this._client?.publish(`device/${this._options.Serial}/request`, JSON.stringify(msg));
+  }
+
+  public JobStop()
+  {
+    this._options.Logger?.Log(`[BambuClient] JobStop`);
+    const msg = 
+    {
+      "print":
+      {
+        "sequence_id": "0",
+        "command": "stop",
+        "param": "", // Always empty
+      }
+    };
+    this._client?.publish(`device/${this._options.Serial}/request`, JSON.stringify(msg));
+  }
+
   private parsers =
   [
     {
@@ -217,13 +262,13 @@ export class BambuClient extends EventEmitter
         // {Command : "flowrate_get_result",       Parser : (message : IMessage, client : BambuClient) => {}  },
         // {Command : "gcode_file",                Parser : (message : IMessage, client : BambuClient) => {}  },
         {Command : "gcode_line",                Parser : (message : IMessage, client : BambuClient) => {}  },
-        // {Command : "pause",                     Parser : (message : IMessage, client : BambuClient) => {}  },
+        {Command : "pause",                     Parser : (message : IMessage, client : BambuClient) => {}  }, // Ignore for now. ({ command: 'pause',  param: '',  reason: 'ERROR STATE',  result: 'FAIL',  sequence_id: '0'})
         // {Command : "print_option",              Parser : (message : IMessage, client : BambuClient) => {}  },
         // {Command : "print_speed",               Parser : (message : IMessage, client : BambuClient) => {}  },
         // {Command : "push_status",               Parser : (message : IMessage, client : BambuClient) => {}  },
-        // {Command : "resume",                    Parser : (message : IMessage, client : BambuClient) => {}  },
+        {Command : "resume",                    Parser : (message : IMessage, client : BambuClient) => {}  }, // Ignore foer now. ({ command: 'resume',  param: '',  reason: 'ERROR STATE',  result: 'FAIL',  sequence_id: '0'})
         // {Command : "set_ctt",                   Parser : (message : IMessage, client : BambuClient) => {}  },
-        // {Command : "stop",                      Parser : (message : IMessage, client : BambuClient) => {}  },
+        {Command : "stop",                      Parser : (message : IMessage, client : BambuClient) => {}  }, // Ignore for now. ({ command: 'stop',  param: '',  reason: 'SUCCESS',  result: 'SUCCESS',  sequence_id: '0'})
         // {Command : "unload_filament",           Parser : (message : IMessage, client : BambuClient) => {}  }
       ]
     },

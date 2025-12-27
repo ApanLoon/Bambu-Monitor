@@ -189,6 +189,29 @@ export class BambuMonitorClient implements IBambuMonitorClient
         }));
     }
 
+    public RequestPauseJob()
+    {
+        this._socket?.send(JSON.stringify(
+        {
+            Type: BambuMonitorServerMessage.RequestJobPause
+        }));
+    }
+
+    public RequestResumeJob()
+    {
+        this._socket?.send(JSON.stringify(
+        {
+            Type: BambuMonitorServerMessage.RequestJobResume
+        }));
+    }
+    public RequestStopJob()
+    {
+        this._socket?.send(JSON.stringify(
+        {
+            Type: BambuMonitorServerMessage.RequestJobStop
+        }));
+    }
+
     public RequestJobHistory()
     {
         this.Log.value = [];

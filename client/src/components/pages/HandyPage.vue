@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { inject, computed } from "vue";
 import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
-import { Stage } from "../../../../server/src/shared/BambuMessages";
+import { GCodeState, Stage } from "../../../../server/src/shared/BambuMessages";
+
+import SafetyButton from "../generic/SafetyButton.vue"
 
 import IconAms from "../icons/IconAms.vue";
 import IconHumidity from "../icons/IconHumidity.vue";
@@ -39,10 +41,23 @@ const thumbnail = (job : Job) =>
 }
 
 const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.round(((value - min) / (max - min)) * 10 ) * 10;
+
+const pauseJob = () =>
+{
+  bambuMonitorClient.RequestPauseJob();
+}
+const resumeJob = () =>
+{
+  bambuMonitorClient.RequestResumeJob();
+}
+const stopJob = () =>
+{
+  bambuMonitorClient.RequestStopJob();
+}
 </script>
 
-<template v-if="bambuMonitorClient.IsConnected.value && bambuMonitorClient.IsPrinterConnected.value">
-  <local-container>
+<template>
+  <local-container v-if="bambuMonitorClient.IsConnected.value === true && bambuMonitorClient.IsPrinterConnected.value === true">
     <Camera></Camera>
     <local-job class="box" v-if="bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.CurrentJob.value.Project != null && bambuMonitorClient.Status.value !== undefined">
       <local-job-image>
@@ -56,6 +71,17 @@ const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.r
       <local-job-status>{{ status }}</local-job-status>
       <local-job-actions></local-job-actions>
     </local-job>
+
+    <local-job-control-panel><!-- TODO: Move this into the local-job container to hide it when there is no job running -->
+      <template v-if="bambuMonitorClient.Status.value.gcode_state === GCodeState.Running || bambuMonitorClient.Status.value.gcode_state === GCodeState.Prepare">
+        <SafetyButton @click="pauseJob"  label="Pause"  name="pause-button"  circle noanimate></SafetyButton>
+      </template>
+      <template v-if="bambuMonitorClient.Status.value.gcode_state === GCodeState.Pause">
+        <SafetyButton @click="resumeJob" label="Resume" name="resume-button" circle noanimate></SafetyButton>
+        <SafetyButton @click="stopJob"   label="Stop"   name="stop-button"   circle noanimate></SafetyButton>
+      </template>
+    </local-job-control-panel>
+
     <local-device v-if="bambuMonitorClient.Status.value !== undefined">
       <local-temperature class="box">
         <div>
@@ -186,6 +212,14 @@ local-job-status
 local-job-actions
 {
   height: 1rem;
+}
+
+local-job-control-panel
+{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 local-temperature
