@@ -306,7 +306,7 @@ const click = () =>
 <style scoped>
 local-safety-button
 {
-    --text-size: 24px;
+    --text-size: 18px;
     --padding: 6px;
     --su-color-bg: var(--color-off);
     --su-color-progress-normal-bg: var(--color-on);
@@ -350,7 +350,7 @@ local-unlocked
 {
     display: flex;
     padding: var(--padding);
-    
+
     .real-button
     {
         font-size: var(--text-size);
