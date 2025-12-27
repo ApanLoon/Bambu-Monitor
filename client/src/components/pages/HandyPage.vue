@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { inject, computed } from "vue";
 import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
-import { Stage } from "../../../../server/src/shared/BambuMessages";
+import { GCodeState, Stage } from "../../../../server/src/shared/BambuMessages";
 
 import SafetyButton from "../generic/SafetyButton.vue"
 
@@ -73,9 +73,13 @@ const stopJob = () =>
     </local-job>
 
     <local-job-control-panel><!-- TODO: Move this into the local-job container to hide it when there is no job running -->
-      <SafetyButton @click="pauseJob"  label="Pause"  name="pause-button"  circle noanimate></SafetyButton>
-      <SafetyButton @click="resumeJob" label="Resume" name="resume-button" circle noanimate></SafetyButton>
-      <SafetyButton @click="stopJob"   label="Stop"   name="stop-button"   circle noanimate></SafetyButton>
+      <template v-if="bambuMonitorClient.Status.value.gcode_state === GCodeState.Running || bambuMonitorClient.Status.value.gcode_state === GCodeState.Prepare">
+        <SafetyButton @click="pauseJob"  label="Pause"  name="pause-button"  circle noanimate></SafetyButton>
+      </template>
+      <template v-if="bambuMonitorClient.Status.value.gcode_state === GCodeState.Pause">
+        <SafetyButton @click="resumeJob" label="Resume" name="resume-button" circle noanimate></SafetyButton>
+        <SafetyButton @click="stopJob"   label="Stop"   name="stop-button"   circle noanimate></SafetyButton>
+      </template>
     </local-job-control-panel>
 
     <local-device v-if="bambuMonitorClient.Status.value !== undefined">
