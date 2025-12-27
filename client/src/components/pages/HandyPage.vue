@@ -3,6 +3,8 @@ import { inject, computed } from "vue";
 import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
 import { Stage } from "../../../../server/src/shared/BambuMessages";
 
+import SafetyButton from "../generic/SafetyButton.vue"
+
 import IconAms from "../icons/IconAms.vue";
 import IconHumidity from "../icons/IconHumidity.vue";
 
@@ -69,11 +71,13 @@ const stopJob = () =>
       <local-job-status>{{ status }}</local-job-status>
       <local-job-actions></local-job-actions>
     </local-job>
+
     <local-job-control-panel><!-- TODO: Move this into the local-job container to hide it when there is no job running -->
-      <button @click="pauseJob">Pause</button>
-      <button @click="resumeJob">Resume</button>
-      <button @click="stopJob">Stop</button>
+      <SafetyButton @click="pauseJob"  label="Pause"  name="pause-button"  circle noanimate></SafetyButton>
+      <SafetyButton @click="resumeJob" label="Resume" name="resume-button" circle noanimate></SafetyButton>
+      <SafetyButton @click="stopJob"   label="Stop"   name="stop-button"   circle noanimate></SafetyButton>
     </local-job-control-panel>
+
     <local-device v-if="bambuMonitorClient.Status.value !== undefined">
       <local-temperature class="box">
         <div>
@@ -204,6 +208,14 @@ local-job-status
 local-job-actions
 {
   height: 1rem;
+}
+
+local-job-control-panel
+{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 local-temperature
