@@ -29,8 +29,12 @@ export interface IBambuMonitorClient
     JobHistory: Ref<Array<Job>>;
 
     Connect(connectHandler? : () => void) : void;
-    GetState() : void;
+    GetState()  : void;
     SetPrinterLogLevel(level : LogLevel) : void;
+
+    RequestPauseJob()  : void;
+    RequestResumeJob() : void;
+    RequestStopJob()   : void;
 
     RequestJobHistory() : void;
     RequestFullLog() : void;

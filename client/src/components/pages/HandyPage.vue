@@ -39,6 +39,19 @@ const thumbnail = (job : Job) =>
 }
 
 const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.round(((value - min) / (max - min)) * 10 ) * 10;
+
+const pauseJob = () =>
+{
+  bambuMonitorClient.RequestPauseJob();
+}
+const resumeJob = () =>
+{
+  bambuMonitorClient.RequestResumeJob();
+}
+const stopJob = () =>
+{
+  bambuMonitorClient.RequestStopJob();
+}
 </script>
 
 <template>
@@ -56,6 +69,11 @@ const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.r
       <local-job-status>{{ status }}</local-job-status>
       <local-job-actions></local-job-actions>
     </local-job>
+    <local-job-control-panel><!-- TODO: Move this into the local-job container to hide it when there is no job running -->
+      <button @click="pauseJob">Pause</button>
+      <button @click="resumeJob">Resume</button>
+      <button @click="stopJob">Stop</button>
+    </local-job-control-panel>
     <local-device v-if="bambuMonitorClient.Status.value !== undefined">
       <local-temperature class="box">
         <div>

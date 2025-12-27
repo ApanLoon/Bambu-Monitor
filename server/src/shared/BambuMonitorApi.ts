@@ -3,9 +3,14 @@ export const BambuMonitorServerMessage = Object.freeze (
 {
   GetState:           "GetState",
   SetLight:           "SetLight",
+  
   GetPrinterLogLevel: "GetPrinterLogLevel",
   SetPrinterLogLevel: "SetPrinterLogLevel",
   RequestFullLog:     "RequestFullLog",
+  
+  RequestJobPause:    "RequestJobPause",
+  RequestJobResume:   "RequestJobResume",
+  RequestJobStop:     "RequestJobStop",
   RequestJobHistory:  "RequestJobHistory",
   SaveJobComment:     "SaveJobComment",
   SaveJobRecipient:   "SaveJobRecipient"

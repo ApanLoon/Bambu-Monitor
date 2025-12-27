@@ -18,6 +18,9 @@ export const ApiEvent = Object.freeze (
 {
     GetState:           "getstate",
     SetLight:           "setlight",
+    JobPause:           "jobPause",
+    JobResume:          "jobResume",
+    JobStop:            "jobStop",
     GetPrinterLogLevel: "getprinterloglevel",
     SetPrinterLogLevel: "setprinterloglevel",
     RequestFullLog:     "requestfulllog",
@@ -70,9 +73,14 @@ export class Api extends EventEmitter
             {
                 case BambuMonitorServerMessage.GetState:           self.emit(ApiEvent.GetState);                                      break;
                 case BambuMonitorServerMessage.SetLight:           self.emit(ApiEvent.SetLight, msg.isOn);                            break;
+
                 case BambuMonitorServerMessage.GetPrinterLogLevel: self.emit(ApiEvent.GetPrinterLogLevel);                            break;
                 case BambuMonitorServerMessage.SetPrinterLogLevel: self.emit(ApiEvent.SetPrinterLogLevel, msg.Level);                 break;
                 case BambuMonitorServerMessage.RequestFullLog:     self.emit(ApiEvent.RequestFullLog);                                break;
+
+                case BambuMonitorServerMessage.RequestJobPause:    self.emit(ApiEvent.JobPause);                                      break;
+                case BambuMonitorServerMessage.RequestJobResume:   self.emit(ApiEvent.JobResume);                                     break;
+                case BambuMonitorServerMessage.RequestJobStop:     self.emit(ApiEvent.JobStop);                                       break;
                 case BambuMonitorServerMessage.RequestJobHistory:  self.emit(ApiEvent.RequestJobHistory);                             break;
                 case BambuMonitorServerMessage.SaveJobComment:     self.emit(ApiEvent.SaveJobComment,   msg.JobId, msg.NewComment);   break;
                 case BambuMonitorServerMessage.SaveJobRecipient:   self.emit(ApiEvent.SaveJobRecipient, msg.JobId, msg.NewRecipient); break;

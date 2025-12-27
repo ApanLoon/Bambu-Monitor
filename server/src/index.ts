@@ -115,6 +115,9 @@ bambuClient.on(BambuClientEvent.ProjectLoaded,    (project, job) => jobManager.H
 
 api.on(ApiEvent.GetState,                                                       sendState);
 api.on(ApiEvent.SetLight,                 isOn                               => console.log (isOn));
+api.on(ApiEvent.JobPause,                 ()                                 => bambuClient.JobPause());
+api.on(ApiEvent.JobResume,                ()                                 => bambuClient.JobResume());
+api.on(ApiEvent.JobStop,                  ()                                 => bambuClient.JobStop());
 api.on(ApiEvent.GetPrinterLogLevel,       ()                                 => api.sendPrinterLogLevel (bambuClient.LogLevel));
 api.on(ApiEvent.SetPrinterLogLevel,       level                              => bambuClient.SetLogLevel (level));
 api.on(ApiEvent.RequestFullLog,           ()                                 => logger.SendFullLog ());
