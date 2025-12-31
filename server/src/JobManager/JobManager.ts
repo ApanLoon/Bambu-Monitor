@@ -112,7 +112,7 @@ export class JobManager extends EventEmitter
                 this.CurrentJob.State = JobState.Started;
             }
 
-            this.emit (JobEvent.JobGetProject, this.CurrentJob);
+            setTimeout (() => this.emit (JobEvent.JobGetProject, this.CurrentJob), 2000); // Don't download the project immediately to give the printer time to store it fully.
             this.emit (JobEvent.JobUpdated, this.CurrentJob);
         }
 
