@@ -82,6 +82,11 @@ const saveRecipient = (jobId: string, newRecipient : string) =>
         <local-recipient><StringInput :rightAlign="true" :value="job.Recipient" @change="newRecipient => saveRecipient(job.Id, newRecipient)"></StringInput></local-recipient>
         <local-name>{{ job.Name }}</local-name>
         <local-comment><StringInput :multiLine="true" :value="job.Comment" @change="newComment => saveComment(job.Id, newComment)"></StringInput></local-comment>
+        <local-filaments>
+            <local-filament v-for="filament in job.Project?.Filaments" :style="{'--filament-colour': filament.Colour }">
+                {{ filament.BrandFamily }}: {{ filament.UsedWeight }}g
+            </local-filament>
+        </local-filaments>
         <local-duration>{{  duration(job) }}</local-duration>
         <local-total-weight>{{ job.Project?.TotalWeight }}g</local-total-weight>
         <local-plate>{{ job.Project?.PlateName }}</local-plate>
@@ -115,11 +120,12 @@ local-job
     grid-template-areas: "img state    recipient"
                          "img name     name"
                          "img comment  comment"
+                         "img filament filament"
                          "img duration total-weight"
                          "img plate    start"
                          ;
     grid-template-columns: 20% auto auto;
-    grid-template-rows: auto auto 1fr auto auto;
+    grid-template-rows: auto auto 1fr auto auto auto;
 
     padding-top: 0.5rem;
     margin-right: 1rem;
@@ -160,6 +166,31 @@ local-comment
 {
     grid-area: comment;
 }
+local-filaments
+{
+    grid-area: filament;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+local-filament
+{
+    text-wrap: nowrap;
+    display: inline;
+    
+    &::before
+    {
+        content: "";
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        background-color: var(--filament-colour);
+        border: 1px solid var(--color-border);
+        vertical-align: -25%;
+        margin-right: 0.5rem;
+    }
+}
+
 local-duration
 {
     grid-area: duration;
