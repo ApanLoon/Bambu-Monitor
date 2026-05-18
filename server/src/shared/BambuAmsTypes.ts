@@ -169,7 +169,7 @@ export const AmsStatus2Sub = (status : number ) =>
     return status & 0xFF;
 }
     
-export const AmsStatus2String = (status : number) =>
+export const AmsStatus2String = (status : number, hideUnknown : boolean = false) =>
 {
     if (status === 0)
     {
@@ -186,6 +186,6 @@ export const AmsStatus2String = (status : number) =>
         case AmsStatusMain.RFID_IDENTIFYING:
             return AmsRfidStatus[sub] ?? `Unknown RFID status (${sub})`;
         default:
-            return `${AmsStatusMain[main]}:${sub}`;
+            return hideUnknown ? "" : `${AmsStatusMain[main]}:${sub}`;
     }
 }

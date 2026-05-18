@@ -2,6 +2,7 @@
 import { inject, computed } from "vue";
 import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
 import { GCodeState, Stage } from "../../../../server/src/shared/BambuMessages";
+import { AmsStatus2String } from "../../../../server/src/shared/BambuAmsTypes";
 
 import SafetyButton from "../generic/SafetyButton.vue"
 
@@ -30,8 +31,13 @@ const RemainingTime = computed<string>(() =>
 
 const status = computed<string>(() => 
 {
-  
-  return `${Stage[bambuMonitorClient.Status.value.stg_cur]} (${bambuMonitorClient.Status.value.gcode_state})`;
+  let stage = Stage[bambuMonitorClient.Status.value.stg_cur];
+  let ams_status = AmsStatus2String(bambuMonitorClient.Status.value.ams_status, true);
+  if (ams_status !== "")
+  {
+    ams_status = ` (${ams_status})`;
+  }
+  return `${stage}${ams_status}`;
 });
 
 // TODO: Move the thumbnail function somewhere to remove the need to duplicate it in the History page.
