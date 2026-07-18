@@ -113,7 +113,7 @@ export class Database extends EventEmitter
       const db = this._client.db();
       const collection = db.collection("Job");
       await collection.updateOne (
-          { id: job.Id },
+          { Id: job.Id },
           { $set: job },
           { upsert: true }
       );
