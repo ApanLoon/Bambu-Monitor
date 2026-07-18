@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, type Ref } from "vue";
+import { ref, type Ref } from "vue";
 import IconEdit from "../icons/IconEdit.vue";
 const props = defineProps(
 {
@@ -101,7 +101,7 @@ button
     margin-bottom: auto;
     margin-right: 2px;
 }
-button::active
+button:active
 {
     outline: none;
 }

@@ -55,15 +55,8 @@ export default defineConfig (( { mode } ) =>
 
     build:
     {
-      outDir: '../server/dist/wwwroot'
-    },
-
-    esbuild:
-    {
-      supported:
-      {
-        "top-level-await": true // Assume that browsers can handle this
-      }
+      outDir: '../server/dist/wwwroot',
+      target: 'esnext',
     },
 
     server:
