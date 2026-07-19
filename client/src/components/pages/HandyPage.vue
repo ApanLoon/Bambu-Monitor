@@ -65,12 +65,12 @@ const stopJob = () =>
 <template>
   <local-container v-if="bambuMonitorClient.IsConnected.value === true && bambuMonitorClient.IsPrinterConnected.value === true">
     <Camera></Camera>
-    <local-job class="box" v-if="bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.CurrentJob.value.Project != null && bambuMonitorClient.Status.value !== undefined">
+    <local-job class="box" v-if="bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.Status.value !== undefined">
       <local-job-image>
         <img :src="thumbnail(bambuMonitorClient.CurrentJob.value)" alt="Project Image" />
       </local-job-image>
       <local-job-name>{{ bambuMonitorClient.CurrentJob.value.Name }}</local-job-name>
-      <local-job-profile>{{ bambuMonitorClient.CurrentJob.value.Project.SettingsName }}</local-job-profile>
+      <local-job-profile>{{ bambuMonitorClient.CurrentJob.value.Project?.SettingsName }}</local-job-profile>
       <local-job-layers><h1>Printed layers</h1><span>{{ bambuMonitorClient.Status.value.layer_num }}/{{ bambuMonitorClient.Status.value.total_layer_num }}</span></local-job-layers>
       <local-job-progress-text><h1>{{bambuMonitorClient.Status.value.mc_percent}}%</h1><span>-{{ RemainingTime }}</span></local-job-progress-text>
       <local-job-progress-bar><progress :value="bambuMonitorClient.Status.value.mc_percent" min="0" max="100"></progress></local-job-progress-bar>
