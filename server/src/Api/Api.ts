@@ -24,6 +24,7 @@ export const ApiEvent = Object.freeze (
     GetPrinterLogLevel: "getprinterloglevel",
     SetPrinterLogLevel: "setprinterloglevel",
     RequestFullLog:     "requestfulllog",
+    RequestCurrentJob:  "requestcurrentjob",
     RequestJobHistory:  "requestjobHistory",
     SaveJobComment:     "saveJobComment",
     SaveJobRecipient:   "saveJobRecipient"
@@ -78,6 +79,7 @@ export class Api extends EventEmitter
                 case BambuMonitorServerMessage.SetPrinterLogLevel: self.emit(ApiEvent.SetPrinterLogLevel, msg.Level);                 break;
                 case BambuMonitorServerMessage.RequestFullLog:     self.emit(ApiEvent.RequestFullLog);                                break;
 
+                case BambuMonitorServerMessage.RequestCurrentJob:  self.emit(ApiEvent.RequestCurrentJob);                             break;
                 case BambuMonitorServerMessage.RequestJobPause:    self.emit(ApiEvent.JobPause);                                      break;
                 case BambuMonitorServerMessage.RequestJobResume:   self.emit(ApiEvent.JobResume);                                     break;
                 case BambuMonitorServerMessage.RequestJobStop:     self.emit(ApiEvent.JobStop);                                       break;

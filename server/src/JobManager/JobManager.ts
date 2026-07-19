@@ -4,9 +4,11 @@ import { Project } from "../shared/Project.js";
 import { GCodeState } from "../shared/BambuMessages.js";
 import { type Change } from "../BambuClient/CompareObjects.js"
 import { EventEmitter } from "node:events";
+import { Logger } from "../Logger/Logger.js";
 
 export class JobManagerOptions
 {
+  Logger?  : Logger;
   Database?  : Database;
 }
 export const JobEvent = Object.freeze (
@@ -83,6 +85,7 @@ export class JobManager extends EventEmitter
         if (this.CurrentJob !== null && this.CurrentJob.Name !== status.subtask_name)
         {
             // The current job doesn't match the running job. What to do?
+            this._options.Logger?.Log(`[JobManager] Current job name "${this.CurrentJob.Name}" does not match the running job name "${status.subtask_name}". Cancelling current job.`);
             this.CancelCurrentJob();
         }
 
@@ -98,6 +101,7 @@ export class JobManager extends EventEmitter
                 )
                 {
                     // It is NOT the same job as we think that we are starting now, stop the job that is listed as pending the database.
+                    this._options.Logger?.Log(`[JobManager] The last pending job in the database does not match the running job. Cancelling current job.`);
                     this.CancelCurrentJob(); // NOTE: This clears this.CurrentJob, so we will create a new one below.
                 }
             }
@@ -112,6 +116,7 @@ export class JobManager extends EventEmitter
                 this.CurrentJob.State = JobState.Started;
 
                 setTimeout (() => this.emit (JobEvent.JobGetProject, this.CurrentJob), 2000); // Don't download the project immediately to give the printer time to store it fully.
+                this._options.Logger?.Log(`[JobManager] Created new job with name "${this.CurrentJob.Name}" and gcode file "${this.CurrentJob.GcodeName}".`);
             }
 
             this.emit (JobEvent.JobUpdated, this.CurrentJob);
@@ -123,6 +128,7 @@ export class JobManager extends EventEmitter
             this.CurrentJob.State = status.gcode_state === GCodeState.Failed ? JobState.Failed : JobState.Finished;
             this.emit (JobEvent.JobUpdated, this.CurrentJob); // NOTE: This will hopefully trigger a database update. TODO: Would it be better to explicitly call the database from here when creating, updating or stopping jobs? 
             this.CancelCurrentJob();
+            this._options.Logger?.Log(`[JobManager] Job "${this.CurrentJob?.Name}" has ${this.CurrentJob?.State === JobState.Finished ? "finished" : "failed"}.`);
         }
     }
 
@@ -133,6 +139,7 @@ export class JobManager extends EventEmitter
             return;
         }
         this.CurrentJob.Project = project; // TODO: Should probably verify that the given job is the same as the Current job.
+        this._options.Logger?.Log(`[JobManager] Project loaded for job "${this.CurrentJob.Name}".`);
         this.emit (JobEvent.JobUpdated, this.CurrentJob);
     }
 

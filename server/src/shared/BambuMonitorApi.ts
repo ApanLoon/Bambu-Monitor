@@ -11,6 +11,7 @@ export const BambuMonitorServerMessage = Object.freeze (
   RequestJobPause:    "RequestJobPause",
   RequestJobResume:   "RequestJobResume",
   RequestJobStop:     "RequestJobStop",
+  RequestCurrentJob:  "RequestCurrentJob",
   RequestJobHistory:  "RequestJobHistory",
   SaveJobComment:     "SaveJobComment",
   SaveJobRecipient:   "SaveJobRecipient"
