@@ -3,7 +3,7 @@ ARG NODE_VERSION=24
 
 FROM node:${NODE_VERSION}-alpine
 
-RUN apk update && apk add ffmpeg
+RUN apk update && apk add ffmpeg lftp
 
 # Use production node environment by default.
 ENV NODE_ENV production
