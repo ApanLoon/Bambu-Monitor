@@ -69,6 +69,7 @@ const database = new Database(
 // JobManager:
 const jobManager = new JobManager(
 {
+  Logger:   logger,
   Database: database
 });
 
@@ -121,6 +122,7 @@ api.on(ApiEvent.JobStop,                  ()                                 => 
 api.on(ApiEvent.GetPrinterLogLevel,       ()                                 => api.sendPrinterLogLevel (bambuClient.LogLevel));
 api.on(ApiEvent.SetPrinterLogLevel,       level                              => bambuClient.SetLogLevel (level));
 api.on(ApiEvent.RequestFullLog,           ()                                 => logger.SendFullLog ());
+api.on(ApiEvent.RequestCurrentJob,        ()                                 => api.sendCurrentJob (jobManager.CurrentJob));
 api.on(ApiEvent.RequestJobHistory,  async ()                                 => api.sendJobHistory (await jobManager.GetJobHistory()));
 api.on(ApiEvent.SaveJobComment,     async (jobId : string, newComment   : string) => jobManager.SaveJobComment   (jobId, newComment));
 api.on(ApiEvent.SaveJobRecipient,   async (jobId : string, newRecipient : string) => jobManager.SaveJobRecipient (jobId, newRecipient));
