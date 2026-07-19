@@ -27,7 +27,7 @@ export class BambuFtpClient
             {
                 if (fs.statSync(this._options.FtpOptions.LocalFilePath).isDirectory() == false)
                 {
-                    this._options.Logger?.Log("BambuFtpClient: Local file path exists but is not a directory. Ftp downloads will not work.");
+                    this._options.Logger?.Log("[BambuFtpClient] Constructor: Local file path exists but is not a directory. Ftp downloads will not work.");
                 }
             }
             else
@@ -38,14 +38,14 @@ export class BambuFtpClient
         }
         catch (err : any)
         {
-            console.log("BambuFtpClient: ", err);
-            //this._options.Logger?.Log("BambuFtpClient: ", err);
+            //console.log("BambuFtpClient: ", err);
+            this._options.Logger?.Log("[BambuFtpClient] Constructor: Error: ", err);
         }
     }
 
     public async DownloadProject (srcPath : string, prefix : string) : Promise<Project | null>
     {
-        this._options.Logger?.Log(`BambuFtpClient: Trying to get file ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath}`);
+        this._options.Logger?.Log(`[BambuFtpClient] DownloadProject: Trying to get file ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath}`);
         try
         {
             await this._ftpClient.access(
@@ -73,13 +73,13 @@ export class BambuFtpClient
 
             let project : Project = new Project();
 
-			this._options.Logger?.Log(`BambuFtpClient: File ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath} unpacked. Reading project settings...`);
+			this._options.Logger?.Log(`[BambuFtpClient] DownloadProject: File ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath} unpacked. Reading project settings...`);
 
             // Read project_settings.config:
             const projectSettings = JSON.parse(await fs.promises.readFile(Path.join(dstFolder, "Metadata", "project_settings.config"), "utf-8"));
             project.SettingsName = projectSettings?.print_settings_id;
 
-			this._options.Logger?.Log(`BambuFtpClient: File ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath} project settings read. Reading model settings...`);
+			this._options.Logger?.Log(`[BambuFtpClient] DownloadProject: File ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath} project settings read. Reading model settings...`);
 
             // Read model_settings.config:
             const modelSettingsParser = new XMLParser(
@@ -98,7 +98,7 @@ export class BambuFtpClient
             project.PlateName = plate?.plater_name;
             project.ThumbnailFile = Path.join(escapedDstFolder, plate?.thumbnail_file);
 
-			this._options.Logger?.Log(`BambuFtpClient: File ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath} model settings read. Reading slice info...`);
+			this._options.Logger?.Log(`[BambuFtpClient] DownloadProject: File ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath} model settings read. Reading slice info...`);
 
             // Read slice_info.config:
             const sliceInfoParser = new XMLParser(
@@ -114,14 +114,14 @@ export class BambuFtpClient
             project.TotalWeight = Number(metadata?.weight);
             project.Filaments = sliceInfo?.config?.plate?.filament?.map ((x:any) => ({ TrayId: Number(x.id), Type: x.type, Colour: x.color, UsedLength: Number(x.used_m), UsedWeight: Number(x.used_g) }));
 
-			this._options.Logger?.Log(`BambuFtpClient: File ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath} read successfully.`);
+			this._options.Logger?.Log(`[BambuFtpClient] DownloadProject: File ftps://${this._options.UserName}@${this._options.Host}:${this._options.FtpOptions.Port}/${srcPath} read successfully.`);
 
             return project;
         }
         catch (err : any)
         {
-            console.log("BambuFtpClient: ", err);
-            //this._options.Logger?.Log("BambuFtpClient: ", err);
+            //console.log("BambuFtpClient: ", err);
+            this._options.Logger?.Log("[BambuFtpClient] DownloadProject: Error: ", err);
             return null;
         }
     }
