@@ -1,13 +1,17 @@
 import { FfmpegStream, FfmpegStreamEvent } from "./FfmpegStream.js";
 import { CameraFeed } from "./CameraFeed.js";
+import { Logger } from "../Logger/Logger.js";
 
 export class RtspProxy
 {
     private _ffmpegStream : FfmpegStream | undefined;
+    private _logger : Logger | undefined;
 
-    constructor (urlString : string, userName: string, password : string, cameraFeed : CameraFeed)
+    constructor (urlString : string, userName: string, password : string, cameraFeed : CameraFeed, logger : Logger | undefined)
     {
-        console.log("RtspProxy: Connecting to camera...");
+        this._logger = logger;
+        this._logger?.Log("[RtspProxy] Connecting to camera...");
+
         let url = new URL(urlString);
         url.username = userName;
         url.password = password;
@@ -18,7 +22,7 @@ export class RtspProxy
 
         this._ffmpegStream.on(FfmpegStreamEvent.StreamStarted, ()=>
         {
-            console.log("RtspPRoxy: Stream started");
+            this._logger?.Log("[RtspProxy] Stream started.");
             if (this._ffmpegStream === undefined)
             {
                 return;
@@ -32,7 +36,7 @@ export class RtspProxy
 
     public Stop()
     {
-        console.log("RtspPRoxy: Stopping stream...");
+        this._logger?.Log("[RtspProxy] Stopping stream...");
         this._ffmpegStream?.Stop();
     }
 }

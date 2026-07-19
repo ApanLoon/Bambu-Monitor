@@ -97,7 +97,7 @@ export class Api extends EventEmitter
         //this.options.Logger?.Log(`[Api] Client connected. (${connection.id})`);
         connection.on(ConnectionEvent.LostHeartbeat, ()=>
         {
-            console.log("Lost Heartbeat: api");
+            this.options.Logger?.Log("[Api] Connection lost heartbeat. Closing connection.");    
             self.connections.remove (connection);
         });
 

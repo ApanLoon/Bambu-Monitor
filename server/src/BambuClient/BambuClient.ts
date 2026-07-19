@@ -76,7 +76,14 @@ export class BambuClient extends EventEmitter
     Object.assign(this._options, options);
 
     this._ftpClient = new BambuFtpClient(this._options);
-    this._cameraFeed = new CameraFeed({ BambuClient: this, HttpsServer: this._options.HttpsServer, UserName: this._options.UserName, Password: this._options.Password }); // TODO: Should this even be in the BambuClient? The RtspProxy should probably be in BambuClient/ but the camera feed might be its own thing.
+    this._cameraFeed = new CameraFeed(
+      {
+        Logger: this._options.Logger,
+        BambuClient: this,
+        HttpsServer: this._options.HttpsServer,
+        UserName: this._options.UserName,
+        Password: this._options.Password
+      }); // TODO: Should this even be in the BambuClient? The RtspProxy should probably be in BambuClient/ but the camera feed might be its own thing.
   }
   
   private Pad(n : number) : string
@@ -275,8 +282,8 @@ export class BambuClient extends EventEmitter
     {
       Section : "system", Commands : 
       [
-        {Command : "get_access_code",           Parser : (message : IMessage, client : BambuClient) => {}  },
-        {Command : "ledctrl",                   Parser : (message : IMessage, client : BambuClient) => { client.emit (BambuClientEvent.LedCtrl, message); }        },
+        //{Command : "get_access_code",           Parser : (message : IMessage, client : BambuClient) => {}  },
+        //{Command : "ledctrl",                   Parser : (message : IMessage, client : BambuClient) => { client.emit (BambuClientEvent.LedCtrl, message); }        },
         //{Command : "set_accessories",           Parser : (message : IMessage, client : BambuClient) => {} }
       ]
     },
@@ -333,7 +340,7 @@ export class BambuClient extends EventEmitter
         }
         else
         {
-          console.log (`Unknown command: ${section.Section}.${message.command}: `, message);
+          this._options.Logger?.Log (`[BambuClient] Unhandled message: ${section.Section}.${message.command}: ${JSON.stringify(message)}`);
         }
       }
     });

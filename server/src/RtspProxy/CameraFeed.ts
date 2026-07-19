@@ -4,11 +4,13 @@ import { EventEmitter } from "node:events";
 import { Connection, ConnectionCollection, ConnectionEvent } from "../Api/ConnectionCollection.js";
 import { BambuClient } from "../BambuClient/BambuClient.js";
 import { RtspProxy } from "./RtspProxy.js";
+import { Logger } from "../Logger/Logger.js";
 
 export class CameraFeedOptions
 {
+    public Logger?      : Logger | undefined;
     public BambuClient  : BambuClient | null = null;
-    public HttpsServer? : https.Server |undefined;
+    public HttpsServer? : https.Server | undefined;
     public UserName     : string = "bblp";
     public Password     : string = "";
 }
@@ -32,7 +34,7 @@ export class CameraFeed extends EventEmitter
         Object.assign(this._options, options);
         if (this._options.HttpsServer === undefined )
         {
-            console.log("CameraFeed requires an https server.");
+            this._options.Logger?.Log("[CameraFeed] Constructor: CameraFeed requires an https server.");
             return;
         }
 
@@ -65,13 +67,13 @@ export class CameraFeed extends EventEmitter
         //If there are zero connections, create the RtspProxy:
         if (this._connections.count() === 0 && this._options.BambuClient?.status.ipcam !== undefined && this._options.BambuClient?.status.ipcam.rtsp_url !== "" && this._rtspProxy === undefined)
         {
-            this._rtspProxy = new RtspProxy(this._options.BambuClient?.status.ipcam.rtsp_url, this._options.UserName, this._options.Password, this);
+            this._rtspProxy = new RtspProxy(this._options.BambuClient?.status.ipcam.rtsp_url, this._options.UserName, this._options.Password, this, this._options.Logger);
         }
 
         let connection = new Connection(socket, (data : string) => { }, (_event: any, connection: Connection) => { this._connections.remove(connection); });
         connection.on(ConnectionEvent.LostHeartbeat, ()=>
         {
-            console.log("Lost Heartbeat: ipcam");
+            this._options.Logger?.Log("[CameraFeed] Connection lost heartbeat. Closing connection.");
             this._connections.remove (connection);
             connection.Close();
 
