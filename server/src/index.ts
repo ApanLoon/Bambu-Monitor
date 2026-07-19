@@ -11,6 +11,7 @@ import { JobEvent, JobManager } from "./JobManager/JobManager.js";
 import { Logger, LoggerEvent } from "./Logger/Logger.js";
 import { Database, DatabaseEvent } from "./Database/Database.js";
 import { Job } from "./shared/Job.js";
+import { BambuFtpOptions } from "./BambuClient/BambuFtpClient.js";
 
 dotenv.config();
 
@@ -88,10 +89,12 @@ const bambuClient = new BambuClient(
   Serial:   process.env.X1C_SERIAL   || "",
   Password: process.env.X1C_PASSWORD || "",
   FtpOptions: 
-  {
-    Port: 990,
-    LocalFilePath: "./projectArchive"
-  },
+  new BambuFtpOptions(
+    {
+      Port:          990,
+      LocalFilePath: "./projectArchive",
+    }
+  ),
   HttpsServer: server
 });
 
