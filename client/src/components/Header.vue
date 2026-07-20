@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { inject, computed } from "vue";
+import { inject } from "vue";
 import { useRouter } from "vue-router";
 import { useKeycloak } from "@josempgon/vue-keycloak";
 import { type IBambuMonitorClient} from "@/plugins/IBambuMonitorClient";
-import { LogLevel } from "../../../server/src/shared/LogLevel";
-import StyledSelect from "./generic/StyledSelect.vue";
 import IconLogout from "./icons/IconLogout.vue";
 
 const router = useRouter();
@@ -14,16 +12,6 @@ const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)
 {
   throw new Error ("[Header] Setup: No BambuMonitorClient plugin found.");
-}
-
-
-const LogLevelString = computed<string>(() => LogLevel[bambuMonitorClient.LogLevel.value]);
-const LogLevels = computed(()=>Object.keys(LogLevel).filter(x => isNaN(Number(x)) === true));
-
-const selectLogLevel = function (selected : string)
-{
-  const level : LogLevel = (<any>LogLevel)[selected];
-  bambuMonitorClient.SetPrinterLogLevel(level);
 }
 </script>
 
@@ -35,17 +23,6 @@ const selectLogLevel = function (selected : string)
       <local-backend-connected>Backend is {{ bambuMonitorClient.IsConnected.value === true ? "" : "not" }} connected</local-backend-connected>
       <local-user-name v-if="isAuthenticated">{{ decodedToken.given_name }} {{ decodedToken.family_name }} <button @click="keycloak?.logout()"><IconLogout></IconLogout></button></local-user-name>
       <local-printer-connected>Printer is {{ bambuMonitorClient.IsPrinterConnected.value === true ? "" : "not" }} connected</local-printer-connected>
-      <local-log-level>Log level: <StyledSelect :options="LogLevels" :default="LogLevelString" @change="selectLogLevel"></StyledSelect></local-log-level>
-      <!-- <div>
-        <h1>Bambu Monitor</h1>
-        <div>Backend is {{ bambuMonitorClient.IsConnected.value === true ? "" : "not" }} connected</div>
-        <div v-if="bambuMonitorClient.IsConnected.value">Printer is {{ bambuMonitorClient.IsPrinterConnected.value === true ? "" : "not" }} connected
-          <local-log-level>
-            Log level:
-            <StyledSelect :options="LogLevels" :default="LogLevelString" @change="selectLogLevel"></StyledSelect>
-          </local-log-level>
-        </div>
-      </div> -->
     </local-header>
     <nav>
         <RouterLink to="/">Handy</RouterLink>
@@ -63,7 +40,7 @@ local-header
   display: grid;
   grid-template-areas: "app-logo app-title         ."
                        "app-logo backend-connected user-name"
-                       "app-logo printer-connected log-level";
+                       "app-logo printer-connected .";
   grid-template-columns: auto 1fr 1fr;
 }
 
@@ -95,10 +72,6 @@ local-user-name button
 local-printer-connected
 {
   grid-area: printer-connected;
-}
-local-log-level
-{
-  grid-area: log-level;
 }
 
 nav
