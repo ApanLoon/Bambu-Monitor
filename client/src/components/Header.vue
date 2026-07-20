@@ -5,6 +5,7 @@ import { useKeycloak } from "@josempgon/vue-keycloak";
 import { type IBambuMonitorClient} from "@/plugins/IBambuMonitorClient";
 import IconLogo from "./icons/IconLogo.vue";
 import IconLogout from "./icons/IconLogout.vue";
+import Job from "./JobHeader.vue";
 
 const router = useRouter();
 const { keycloak, isAuthenticated, decodedToken } = useKeycloak();
@@ -24,6 +25,7 @@ if (bambuMonitorClient === undefined)
       <local-backend-connected>Backend is {{ bambuMonitorClient.IsConnected.value === true ? "" : "not" }} connected</local-backend-connected>
       <local-user-name v-if="isAuthenticated">{{ decodedToken.given_name }} {{ decodedToken.family_name }} <button @click="keycloak?.logout()"><IconLogout></IconLogout></button></local-user-name>
       <local-printer-connected>Printer is {{ bambuMonitorClient.IsPrinterConnected.value === true ? "" : "not" }} connected</local-printer-connected>
+      <local-job><Job></Job></local-job>
     </local-header>
     <nav>
         <RouterLink to="/">Handy</RouterLink>
@@ -39,11 +41,12 @@ if (bambuMonitorClient === undefined)
 local-header
 {
   display: grid;
-  grid-template-areas: "app-logo app-title         ."
-                       "app-logo backend-connected ."
-                       "app-logo printer-connected ."
-                       "app-logo user-name         .";
-  grid-template-columns: auto 1fr 1fr;
+  grid-template-areas: "app-logo app-title         job"
+                       "app-logo backend-connected job"
+                       "app-logo printer-connected job"
+                       "app-logo user-name         job";
+  grid-template-columns: auto 8rem 1fr;
+  grid-template-rows: 1.5rem 1.2rem 1.2rem 1.2rem;
 }
 
 local-app-logo
@@ -53,8 +56,8 @@ local-app-logo
 local-app-title
 {
   grid-area: app-title;
-  font-size: 0.8rem;
-  margin-top: -0.2em; /* TODO: This is sensitive to the font-family */
+  font-size: 1rem;
+  margin-top: -0.25rem; /* TODO: This is sensitive to the font-family */
 }
 local-backend-connected
 {
@@ -74,6 +77,10 @@ local-user-name button
 local-printer-connected
 {
   grid-area: printer-connected;
+}
+local-job
+{
+  grid-area: job;
 }
 
 nav
