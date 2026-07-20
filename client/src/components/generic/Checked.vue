@@ -8,7 +8,8 @@ defineProps<
 <template>
     <local-container>
         <slot></slot>
-        <span :class="{ checked : isChecked }">{{ isChecked ? "&#10004;" : "&#10008;"  }}</span>
+        <!-- The &#xFE0E; character prevents iOS from replacing the characters with emojis that doesn't change colour: -->
+        <span :class="{ checked : isChecked }">{{ isChecked ? "&#10004;" : "&#10008;" }}&#xFE0E;</span>
     </local-container>
 </template>
 
