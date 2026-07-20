@@ -64,9 +64,9 @@ local-job
                          "image profile        layers"
                          "image progress-bar   progress-bar"
                          "image status         remaining-time";
-    grid-template-columns: 20% 1fr auto;
-    grid-template-rows: 1.5rem 1rem 1.1rem 1rem;
-    gap: 0.2rem;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: 1.5rem 1rem 1.5rem 1rem;
+
 }
 
 local-job-image
@@ -75,12 +75,19 @@ local-job-image
     aspect-ratio: 1 / 1;
     height: 100%;
 }
+img
+{
+  display: block;
+  width: 90%;
+  justify-self: center;
+}
 
 local-job-name
 {
     grid-area: name;
     color: var(--color-text-highlight);
     font-size: 1rem;
+    margin-top: -0.25rem; /* TODO: This is sensitive to the font-family */
 }
 local-job-profile
 {
@@ -103,6 +110,8 @@ local-job-progress-bar
     grid-area: progress-bar;
     width: 100%;
     position: relative;
+    display: flex;
+    align-items: center;
 }
 local-job-status
 {

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { inject } from "vue";
+import { inject, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useKeycloak } from "@josempgon/vue-keycloak";
 import { type IBambuMonitorClient} from "@/plugins/IBambuMonitorClient";
 import IconLogo from "./icons/IconLogo.vue";
 import IconLogout from "./icons/IconLogout.vue";
+import Checked from "./generic/Checked.vue";
 import Job from "./JobHeader.vue";
 
 const router = useRouter();
@@ -15,6 +16,8 @@ if (bambuMonitorClient === undefined)
 {
   throw new Error ("[Header] Setup: No BambuMonitorClient plugin found.");
 }
+
+const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value && bambuMonitorClient.IsPrinterConnected.value );
 </script>
 
 <template>
@@ -22,10 +25,10 @@ if (bambuMonitorClient === undefined)
     <local-header>
       <local-app-logo><IconLogo></IconLogo></local-app-logo>
       <local-app-title>Bambu Monitor</local-app-title>
-      <local-backend-connected>Backend is {{ bambuMonitorClient.IsConnected.value === true ? "" : "not" }} connected</local-backend-connected>
+      <local-backend-connected><Checked :isChecked="bambuMonitorClient.IsConnected.value">Backend</Checked></local-backend-connected>
+      <local-printer-connected><Checked :isChecked="bambuMonitorClient.IsPrinterConnected.value">Printer</Checked><local-dim-overlay v-if="!isConnected"></local-dim-overlay></local-printer-connected>
       <local-user-name v-if="isAuthenticated">{{ decodedToken.given_name }} {{ decodedToken.family_name }} <button @click="keycloak?.logout()"><IconLogout></IconLogout></button></local-user-name>
-      <local-printer-connected>Printer is {{ bambuMonitorClient.IsPrinterConnected.value === true ? "" : "not" }} connected</local-printer-connected>
-      <local-job><Job></Job></local-job>
+      <local-job :class="{ dimmed : isConnected }"><Job></Job><local-dim-overlay v-if="!isConnected"></local-dim-overlay></local-job>
     </local-header>
     <nav>
         <RouterLink to="/">Handy</RouterLink>
@@ -57,6 +60,7 @@ local-app-title
 {
   grid-area: app-title;
   font-size: 1rem;
+  color: var(--color-text-highlight);
   margin-top: -0.25rem; /* TODO: This is sensitive to the font-family */
 }
 local-backend-connected
@@ -65,22 +69,39 @@ local-backend-connected
 }
 local-user-name
 {
-  grid-area: user-name;
+    grid-area: user-name;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
 }
 local-user-name button
 {
   background: transparent;
   border: none;
+  padding: 0;
   color: var(--color-text);
   align-self: center;
 }
 local-printer-connected
 {
   grid-area: printer-connected;
+  position: relative;
 }
 local-job
 {
   grid-area: job;
+  position: relative;
+}
+local-dim-overlay
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-background);
+  opacity: 0.8;
 }
 
 nav
