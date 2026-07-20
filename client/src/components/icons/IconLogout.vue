@@ -15,7 +15,7 @@
 svg
 {
 	display: inline-block;
-	width: 0.7rem;
-	height: 0.7rem;
+	width: 0.8rem;
+	height: 0.8rem;
 }
 </style>

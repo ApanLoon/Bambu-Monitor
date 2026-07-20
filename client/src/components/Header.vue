@@ -3,6 +3,7 @@ import { inject } from "vue";
 import { useRouter } from "vue-router";
 import { useKeycloak } from "@josempgon/vue-keycloak";
 import { type IBambuMonitorClient} from "@/plugins/IBambuMonitorClient";
+import IconLogo from "./icons/IconLogo.vue";
 import IconLogout from "./icons/IconLogout.vue";
 
 const router = useRouter();
@@ -18,7 +19,7 @@ if (bambuMonitorClient === undefined)
 <template>
   <div>
     <local-header>
-      <local-app-logo><img alt="Bambu Monitor logo" class="logo" src="@/assets/logo.svg" width="50" height="50" /></local-app-logo>
+      <local-app-logo><IconLogo></IconLogo></local-app-logo>
       <local-app-title>Bambu Monitor</local-app-title>
       <local-backend-connected>Backend is {{ bambuMonitorClient.IsConnected.value === true ? "" : "not" }} connected</local-backend-connected>
       <local-user-name v-if="isAuthenticated">{{ decodedToken.given_name }} {{ decodedToken.family_name }} <button @click="keycloak?.logout()"><IconLogout></IconLogout></button></local-user-name>
