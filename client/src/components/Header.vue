@@ -39,8 +39,9 @@ local-header
 {
   display: grid;
   grid-template-areas: "app-logo app-title         ."
-                       "app-logo backend-connected user-name"
-                       "app-logo printer-connected .";
+                       "app-logo backend-connected ."
+                       "app-logo printer-connected ."
+                       "app-logo user-name         .";
   grid-template-columns: auto 1fr 1fr;
 }
 
