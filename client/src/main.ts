@@ -7,19 +7,17 @@ import App from './App.vue';
 
 import BambuMonitorClientPlugin from './plugins/BambuMonitorClientPlugin'
 
-import StatusPage from "./components/pages/StatusPage.vue";
-import CameraPage from "./components/pages/CameraPage.vue";
 import HandyPage from "./components/pages/HandyPage.vue";
 import HistoryPage from "./components/pages/HistoryPage.vue";
+import DebugPage from "./components/pages/DebugPage.vue";
 import LogPage from "./components/pages/LogPage.vue";
 import type { BambuMonitorClientOptions } from './plugins/BambuMonitorClient';
  
 const routes =
 [
-    { path: "/",        component: StatusPage  },
-    { path: "/camera",  component: CameraPage  },
-    { path: "/handy",   component: HandyPage   },
+    { path: "/",        component: HandyPage  },
     { path: "/history", component: HistoryPage },
+    { path: "/debug",   component: DebugPage   },
     { path: "/log",     component: LogPage     }
 ];
 
