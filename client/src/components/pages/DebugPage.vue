@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { computed, inject } from "vue";
-import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient";
+import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient.ts";
 
 import Ams from "../Ams.vue"
 import Job from "../Job.vue"
 import JsonDisplay from "../generic/JsonDisplay.vue";
 import Lights from "../Lights.vue";
 import Temperature from "../Temperature.vue";
-import { HomeFlag, SdCardState } from "../../../../server/src/shared/BambuMessages";
+import { HomeFlag, SdCardState } from "../../../../server/src/shared/BambuMessages.ts";
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)

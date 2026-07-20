@@ -48,10 +48,9 @@ const selectLogLevel = function (selected : string)
       </div> -->
     </local-header>
     <nav>
-        <RouterLink to="/">Status</RouterLink>
-        <RouterLink to="/camera">Camera</RouterLink>
-        <RouterLink to="/Handy">Handy</RouterLink>
-        <RouterLink to="/History">History</RouterLink>
+        <RouterLink to="/">Handy</RouterLink>
+        <RouterLink to="/history">History</RouterLink>
+        <RouterLink to="/debug">Debug</RouterLink>
         <RouterLink to="/log">Log</RouterLink>
         <local-filler></local-filler>
     </nav>
