@@ -23,8 +23,11 @@ const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value
 <template>
   <div>
     <local-header>
-      <local-app-logo><IconLogo></IconLogo></local-app-logo>
-      <local-app-title>Bambu Monitor</local-app-title>
+      <local-app-logo>
+        <IconLogo></IconLogo>
+        <local-app-title>Bambu Monitor</local-app-title>
+      </local-app-logo>
+      
       <local-backend-connected><Checked :isChecked="bambuMonitorClient.IsConnected.value">Backend</Checked></local-backend-connected>
       <local-printer-connected><Checked :isChecked="bambuMonitorClient.IsPrinterConnected.value">Printer</Checked><local-dim-overlay v-if="!isConnected"></local-dim-overlay></local-printer-connected>
       <local-user-name v-if="isAuthenticated">{{ decodedToken.given_name }} {{ decodedToken.family_name }} <button @click="keycloak?.logout()"><IconLogout></IconLogout></button></local-user-name>
@@ -44,24 +47,27 @@ const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value
 local-header
 {
   display: grid;
-  grid-template-areas: "app-logo app-title         job"
-                       "app-logo backend-connected job"
-                       "app-logo printer-connected job"
-                       "app-logo user-name         job";
-  grid-template-columns: auto 8rem 1fr;
-  grid-template-rows: 1.5rem 1.2rem 1.2rem 1.2rem;
+  grid-template-areas: "app-logo           job               job               job"
+                       "backend-connected  job               job               job"
+                       "printer-connected  job               job               job"
+                       "user-name          user-name         .                 ."
+;
+  grid-template-rows: auto 0.8rem 0.8rem 0.8rem;
+  gap: 0.5rem;
 }
 
 local-app-logo
 {
   grid-area: app-logo;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-self: left;
 }
 local-app-title
 {
-  grid-area: app-title;
-  font-size: 1rem;
+  font-size: 0.5rem;
   color: var(--color-text-highlight);
-  margin-top: -0.25rem; /* TODO: This is sensitive to the font-family */
 }
 local-backend-connected
 {
@@ -72,7 +78,6 @@ local-user-name
     grid-area: user-name;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 0.5rem;
 }
 local-user-name button

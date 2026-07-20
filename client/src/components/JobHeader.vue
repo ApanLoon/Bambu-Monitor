@@ -30,20 +30,11 @@ const status = computed<string>(() =>
   return `${stage}${ams_status}`;
 });
 
-// TODO: Move the thumbnail function somewhere to remove the need to duplicate it in the History page.
-const thumbnail = (job : Job) =>
-{
-    return job.Project?.ThumbnailFile ? job.Project?.ThumbnailFile : "DefaultProjectThumbnail.png";
-}
-
 const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.round(((value - min) / (max - min)) * 10 ) * 10;
 </script>
 
 <template>
     <local-job class="box" v-if="bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.Status.value !== undefined">
-        <local-job-image>
-            <img :src="thumbnail(bambuMonitorClient.CurrentJob.value)" alt="Project Image" />
-        </local-job-image>
         <local-job-name>{{ bambuMonitorClient.CurrentJob.value.Name }}</local-job-name>
         <local-job-profile>{{ bambuMonitorClient.CurrentJob.value.Project?.SettingsName }}</local-job-profile>
         <local-job-layers><h1>Current layer</h1><span>{{ bambuMonitorClient.Status.value.layer_num }}/{{ bambuMonitorClient.Status.value.total_layer_num }}</span></local-job-layers>
@@ -60,26 +51,13 @@ const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.r
 local-job
 {
     display: grid;
-    grid-template-areas: "image name           name"
-                         "image profile        layers"
-                         "image progress-bar   progress-bar"
-                         "image status         remaining-time";
-    grid-template-columns: auto 1fr auto;
-    grid-template-rows: 1.5rem 1rem 1.5rem 1rem;
-
-}
-
-local-job-image
-{
-    grid-area: image;
-    aspect-ratio: 1 / 1;
-    height: 100%;
-}
-img
-{
-  display: block;
-  width: 90%;
-  justify-self: center;
+    grid-template-areas: "name           name"
+                         "profile        layers"
+                         "progress-bar   progress-bar"
+                         "status         remaining-time";
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 1.5rem 1rem 1.5rem 2rem;
+    gap: 0.1rem;
 }
 
 local-job-name
@@ -116,7 +94,7 @@ local-job-progress-bar
 local-job-status
 {
     grid-area: status;
-    align-self: center;
+    color: var(--color-text-highlight);
 }
 local-job-remaining-time
 {

@@ -19,7 +19,7 @@
 svg
 {
 	display: inline-block;
-	height: 5rem;
+	height: 2rem;
 	width: auto;
 }
 </style>
