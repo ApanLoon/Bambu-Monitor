@@ -4,6 +4,7 @@ import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { vueKeycloak, useKeycloak } from '@josempgon/vue-keycloak'
 import App from './App.vue';
+import vDim from './vue-extensions/v-dim.ts';
 
 import BambuMonitorClientPlugin from './plugins/BambuMonitorClientPlugin'
 
@@ -22,6 +23,7 @@ const routes =
 ];
 
 const app = createApp(App);
+app.directive("dim", vDim);
 
 await vueKeycloak.install(app,
 {

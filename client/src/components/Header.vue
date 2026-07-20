@@ -29,9 +29,9 @@ const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value
       </local-app-logo>
       
       <local-backend-connected><Checked :isChecked="bambuMonitorClient.IsConnected.value">Backend</Checked></local-backend-connected>
-      <local-printer-connected><Checked :isChecked="bambuMonitorClient.IsPrinterConnected.value">Printer</Checked><local-dim-overlay v-if="!isConnected"></local-dim-overlay></local-printer-connected>
+      <local-printer-connected v-dim="!isConnected"><Checked :isChecked="bambuMonitorClient.IsPrinterConnected.value">Printer</Checked></local-printer-connected>
       <local-user-name v-if="isAuthenticated">{{ decodedToken.given_name }} {{ decodedToken.family_name }} <button @click="keycloak?.logout()"><IconLogout></IconLogout></button></local-user-name>
-      <local-job :class="{ dimmed : isConnected }"><Job></Job><local-dim-overlay v-if="!isConnected"></local-dim-overlay></local-job>
+      <local-job v-dim="!isConnected"><Job></Job></local-job>
     </local-header>
     <nav>
         <RouterLink to="/">Handy</RouterLink>
@@ -97,16 +97,6 @@ local-job
 {
   grid-area: job;
   position: relative;
-}
-local-dim-overlay
-{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--color-background);
-  opacity: 0.8;
 }
 
 nav
