@@ -3,7 +3,6 @@ import { inject, computed } from "vue";
 import type { IBambuMonitorClient } from "../plugins/IBambuMonitorClient";
 import { GCodeState, Stage } from "../../../server/src/shared/BambuMessages";
 import { AmsStatus2String } from "../../../server/src/shared/BambuAmsTypes";
-import type { Job } from "../../../server/src/shared/Job";
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)
@@ -19,30 +18,18 @@ const RemainingTime = computed<string>(() =>
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 });
 
-const status = computed<string>(() => 
-{
-  let stage = Stage[bambuMonitorClient.Status.value.stg_cur];
-  let ams_status = AmsStatus2String(bambuMonitorClient.Status.value.ams_status, true);
-  if (ams_status !== "")
-  {
-    ams_status = ` (${ams_status})`;
-  }
-  return `${stage}${ams_status}`;
-});
-
-const toTenPercent = (value : number, max : number, min : number = 0 ) => Math.round(((value - min) / (max - min)) * 10 ) * 10;
 </script>
 
 <template>
     <local-job class="box" v-if="bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.Status.value !== undefined">
         <local-job-name>{{ bambuMonitorClient.CurrentJob.value.Name }}</local-job-name>
-        <local-job-profile>{{ bambuMonitorClient.CurrentJob.value.Project?.SettingsName }}</local-job-profile>
+        <local-job-status>{{ Stage[bambuMonitorClient.Status.value.stg_cur] }}</local-job-status>
         <local-job-layers><h1>Current layer</h1><span>{{ bambuMonitorClient.Status.value.layer_num }}/{{ bambuMonitorClient.Status.value.total_layer_num }}</span></local-job-layers>
         <local-job-progress-bar>
             <progress :value="bambuMonitorClient.Status.value.mc_percent" min="0" max="100"></progress>
             <local-job-progress-text>{{bambuMonitorClient.Status.value.mc_percent}}%</local-job-progress-text>
         </local-job-progress-bar>
-        <local-job-status>{{ status }}</local-job-status>
+        <local-job-ams-status>{{ AmsStatus2String(bambuMonitorClient.Status.value.ams_status, true) }}</local-job-ams-status>
         <local-job-remaining-time><h1>Remaining time</h1><span>-{{ RemainingTime }}</span></local-job-remaining-time>
     </local-job>
 </template>
@@ -52,11 +39,11 @@ local-job
 {
     display: grid;
     grid-template-areas: "name           name"
-                         "profile        layers"
+                         "status         layers"
                          "progress-bar   progress-bar"
-                         "status         remaining-time";
+                         "ams-status     remaining-time";
     grid-template-columns: 1fr auto;
-    grid-template-rows: 1.5rem 1rem 1.5rem 2rem;
+    grid-template-rows: 1.5rem 1rem 1.5rem 1rem;
     gap: 0.1rem;
 }
 

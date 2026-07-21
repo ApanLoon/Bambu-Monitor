@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { inject, computed } from "vue";
-import { useRouter } from "vue-router";
 import { useKeycloak } from "@josempgon/vue-keycloak";
 import { type IBambuMonitorClient} from "@/plugins/IBambuMonitorClient";
 import IconLogo from "./icons/IconLogo.vue";
@@ -8,7 +7,6 @@ import IconLogout from "./icons/IconLogout.vue";
 import Checked from "./generic/Checked.vue";
 import Job from "./JobHeader.vue";
 
-const router = useRouter();
 const { keycloak, isAuthenticated, decodedToken } = useKeycloak();
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
@@ -23,14 +21,14 @@ const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value
 <template>
   <div>
     <local-header>
-      <local-app-logo>
-        <IconLogo></IconLogo>
-        <local-app-title>Bambu Monitor</local-app-title>
-      </local-app-logo>
-      
-      <local-backend-connected><Checked :isChecked="bambuMonitorClient.IsConnected.value">Backend</Checked></local-backend-connected>
-      <local-printer-connected v-dim="!isConnected"><Checked :isChecked="bambuMonitorClient.IsPrinterConnected.value">Printer</Checked></local-printer-connected>
-      <local-user-name v-if="isAuthenticated">{{ decodedToken.given_name }} {{ decodedToken.family_name }} <button @click="keycloak?.logout()"><IconLogout></IconLogout></button></local-user-name>
+      <local-top-left>
+        <local-app-logo>
+          <IconLogo></IconLogo>
+          <local-app-title>Bambu Monitor</local-app-title>
+        </local-app-logo>       
+        <local-backend-connected><Checked :isChecked="bambuMonitorClient.IsConnected.value">Backend</Checked></local-backend-connected>
+        <local-printer-connected v-dim="!isConnected"><Checked :isChecked="bambuMonitorClient.IsPrinterConnected.value">Printer</Checked></local-printer-connected>
+      </local-top-left>
       <local-job v-dim="!isConnected"><Job></Job></local-job>
     </local-header>
     <nav>
@@ -38,7 +36,7 @@ const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value
         <RouterLink to="/history">History</RouterLink>
         <RouterLink to="/debug">Debug</RouterLink>
         <RouterLink to="/log">Log</RouterLink>
-        <local-filler></local-filler>
+        <local-user-name v-if="isAuthenticated">{{ decodedToken.given_name }} {{ decodedToken.family_name }} <button @click="keycloak?.logout()"><IconLogout></IconLogout></button></local-user-name>
     </nav>
   </div>
 </template>
@@ -46,64 +44,60 @@ const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value
 <style scoped>
 local-header
 {
-  display: grid;
-  grid-template-areas: "app-logo           job               job               job"
-                       "backend-connected  job               job               job"
-                       "printer-connected  job               job               job"
-                       "user-name          user-name         .                 ."
-;
-  grid-template-rows: auto 0.8rem 0.8rem 0.8rem;
-  gap: 0.5rem;
+  display: flex;
+  gap: 1rem;
 }
 
-local-app-logo
+local-top-left
 {
-  grid-area: app-logo;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-self: left;
-}
-local-app-title
-{
-  font-size: 0.5rem;
-  color: var(--color-text-highlight);
-}
-local-backend-connected
-{
-  grid-area: backend-connected;
-}
-local-user-name
-{
-    grid-area: user-name;
+  gap: 0.2rem;
+
+  local-app-logo
+  {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    flex-direction: column;
+    justify-self: left;
+    align-self: start;
+
+    local-app-title
+    {
+      font-size: 0.5rem;
+      color: var(--color-text-highlight);
+    }
+  }
 }
-local-user-name button
-{
-  background: transparent;
-  border: none;
-  padding: 0;
-  color: var(--color-text);
-  align-self: center;
-}
-local-printer-connected
-{
-  grid-area: printer-connected;
-  position: relative;
-}
+
 local-job
 {
-  grid-area: job;
+  flex: 1;
   position: relative;
+}
+
+local-user-name
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+
+    & button
+  {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--color-text);
+    align-self: center;
+  }
 }
 
 nav
 {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   display: grid;
-  grid-template-columns: auto auto auto auto auto 1fr;
+  grid-template-columns: auto auto auto auto 1fr;
 }
 
 nav > a
@@ -117,14 +111,5 @@ nav > a
 {
   border-bottom: none;
   color: var(--color-text-highlight);
-}
-
-local-filler::after
-{
-  content: "";
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-  border-bottom: 1px solid var(--color-border);
 }
 </style>
