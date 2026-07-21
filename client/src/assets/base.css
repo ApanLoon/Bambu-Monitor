@@ -15,6 +15,8 @@
   --vt-c-gray-light: #cccccc;
   --vt-c-gray-dark: #2e2e2e;
 
+  --vt-c-bambu-green: #00AE42;
+  
   --vt-c-green: #00ff00;
   --vt-c-green-light: #a0f8a0;
   --vt-c-green-dark: #005a00;
@@ -73,7 +75,7 @@
     --color-text-highlight: var(--vt-c-text-dark-1);
 
     --color-pending: var(--vt-c-orange-dark);
-    --color-on: var(--vt-c-green-dark);
+    --color-on: var(--vt-c-bambu-green);
     --color-off: var(--vt-c-gray-dark);
     --color-error: var(--vt-c-red-dark);  
   }
