@@ -6,6 +6,7 @@ import IconLogo from "./icons/IconLogo.vue";
 import IconLogout from "./icons/IconLogout.vue";
 import Checked from "./generic/Checked.vue";
 import Job from "./JobHeader.vue";
+import PrinterStatus from "./PrinterStatusHeader.vue"
 
 const { keycloak, isAuthenticated, decodedToken } = useKeycloak();
 
@@ -14,8 +15,8 @@ if (bambuMonitorClient === undefined)
 {
   throw new Error ("[Header] Setup: No BambuMonitorClient plugin found.");
 }
-
 const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value && bambuMonitorClient.IsPrinterConnected.value );
+const hasJob      = computed<boolean>(() => bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.Status.value !== undefined);
 </script>
 
 <template>
@@ -29,8 +30,10 @@ const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value
         <local-backend-connected><Checked :isChecked="bambuMonitorClient.IsConnected.value">Backend</Checked></local-backend-connected>
         <local-printer-connected v-dim="!isConnected"><Checked :isChecked="bambuMonitorClient.IsPrinterConnected.value">Printer</Checked></local-printer-connected>
       </local-top-left>
-      <local-job v-dim="!isConnected"><Job></Job></local-job>
+      <local-top-right v-if="hasJob" v-dim="!isConnected"><Job></Job></local-top-right>
+      <local-top-right v-else v-dim="!isConnected"><PrinterStatus></PrinterStatus></local-top-right>
     </local-header>
+
     <nav>
         <RouterLink to="/">Handy</RouterLink>
         <RouterLink to="/history">History</RouterLink>
@@ -69,7 +72,7 @@ local-top-left
   }
 }
 
-local-job
+local-top-right
 {
   flex: 1;
   position: relative;
