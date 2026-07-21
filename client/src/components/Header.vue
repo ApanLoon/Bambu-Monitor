@@ -5,6 +5,7 @@ import { type IBambuMonitorClient} from "@/plugins/IBambuMonitorClient";
 import IconLogo from "./icons/IconLogo.vue";
 import IconLogout from "./icons/IconLogout.vue";
 import Checked from "./generic/Checked.vue";
+import WifiIndicator from "./icons/WifiIndicator.vue"
 import Job from "./JobHeader.vue";
 import PrinterStatus from "./PrinterStatusHeader.vue"
 
@@ -17,6 +18,7 @@ if (bambuMonitorClient === undefined)
 }
 const isConnected = computed<boolean>(() => bambuMonitorClient.IsConnected.value && bambuMonitorClient.IsPrinterConnected.value );
 const hasJob      = computed<boolean>(() => bambuMonitorClient.CurrentJob.value != null && bambuMonitorClient.Status.value !== undefined);
+const wifi        = computed<number> (() => Number(bambuMonitorClient.Status.value.wifi_signal.replace(/^(-[0-9.]+).*/, "$1"))); // Just assume that the unit is always dBm
 </script>
 
 <template>
@@ -28,7 +30,7 @@ const hasJob      = computed<boolean>(() => bambuMonitorClient.CurrentJob.value 
           <local-app-title>Bambu Monitor</local-app-title>
         </local-app-logo>       
         <local-backend-connected><Checked :isChecked="bambuMonitorClient.IsConnected.value">Backend</Checked></local-backend-connected>
-        <local-printer-connected v-dim="!isConnected"><Checked :isChecked="bambuMonitorClient.IsPrinterConnected.value">Printer</Checked></local-printer-connected>
+        <local-printer-connected v-dim="!isConnected"><Checked :isChecked="bambuMonitorClient.IsPrinterConnected.value">Printer <WifiIndicator :strength="wifi" ></WifiIndicator></Checked></local-printer-connected>
       </local-top-left>
       <local-top-right v-if="hasJob" v-dim="!isConnected"><Job></Job></local-top-right>
       <local-top-right v-else v-dim="!isConnected"><PrinterStatus></PrinterStatus></local-top-right>
