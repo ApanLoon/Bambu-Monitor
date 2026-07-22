@@ -1,23 +1,14 @@
 <script lang="ts" setup>
-import { inject, computed } from "vue";
+import { inject } from "vue";
 import type { IBambuMonitorClient } from "../plugins/IBambuMonitorClient";
 import { AmsRfidStatus, AmsStatus2String } from "../../../server/src/shared/BambuAmsTypes";
 import { HomeFlag, SdCardState } from "../../../server/src/shared/BambuMessages.ts";
-
 
 const bambuMonitorClient = inject<IBambuMonitorClient>("BambuMonitorClient");
 if (bambuMonitorClient === undefined)
 {
   throw new Error ("[JobHeader] Setup: No BambuMonitorClient plugin found.");
 }
-
-const RemainingTime = computed<string>(() =>
-{
-    let minutes = bambuMonitorClient.Status.value.mc_remaining_time;
-    let hours = Math.floor(minutes / 60);
-    minutes -= hours * 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
-});
 </script>
 
 <template>
