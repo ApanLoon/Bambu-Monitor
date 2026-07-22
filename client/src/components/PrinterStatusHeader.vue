@@ -22,56 +22,26 @@ const RemainingTime = computed<string>(() =>
 
 <template>
     <local-job class="box" >
-        <local-ams-status><h1>AMS</h1><span>{{ AmsStatus2String(bambuMonitorClient.Status.value.ams_status, true) }}</span></local-ams-status>
-        <local-rfid-status><h1>RFID</h1><span>{{ AmsRfidStatus[bambuMonitorClient.Status.value.ams_rfid_status] }}</span></local-rfid-status>
-        <local-nozzle><h1>Nozzle</h1><span>{{ bambuMonitorClient.Status.value.nozzle_type }} {{ bambuMonitorClient.Status.value.nozzle_diameter }}mm</span></local-nozzle>
-        <local-sdcard><h1>SD card</h1><span> {{  SdCardState[bambuMonitorClient.SdCardState.value] }}</span></local-sdcard>
-        <local-home><h1>Axis home</h1>
+        <local-item><h1>AMS</h1><span>{{ AmsStatus2String(bambuMonitorClient.Status.value.ams_status, true) }}</span></local-item>
+        <local-item><h1>RFID</h1><span>{{ AmsRfidStatus[bambuMonitorClient.Status.value.ams_rfid_status] }}</span></local-item>
+        <local-item><h1>Nozzle</h1><span>{{ bambuMonitorClient.Status.value.nozzle_type }} {{ bambuMonitorClient.Status.value.nozzle_diameter }}mm</span></local-item>
+        <local-item><h1>SD Card</h1><span> {{  SdCardState[bambuMonitorClient.SdCardState.value] }}</span></local-item>
+        <local-item><h1>Home</h1>
             <span v-if="bambuMonitorClient.HomeFlag.value.has(HomeFlag.is_x_axis_home)">X</span>
             <span v-if="bambuMonitorClient.HomeFlag.value.has(HomeFlag.is_y_axis_home)">Y</span>
             <span v-if="bambuMonitorClient.HomeFlag.value.has(HomeFlag.is_z_axis_home)">Z</span>
-        </local-home>
+        </local-item>
     </local-job>
 </template>
 
 <style scoped>
 local-job
 {
-    display: grid;
-    grid-template-areas: "ams-status     nozzle"
-                         "rfid-status    sdcard"
-                         "home           .";
-    grid-template-columns: auto auto;
-    grid-template-rows: 1rem 1rem;
-    gap: 0.1rem 1rem;
-}
-local-ams-status
-{
-    grid-area: ams-status;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
 }
-local-rfid-status
+local-item
 {
-    grid-area: rfid-status;
-    display: flex;
-    justify-content: space-between;
-}
-local-nozzle
-{
-    grid-area: nozzle;
-    display: flex;
-    justify-content: space-between;
-}
-local-sdcard
-{
-    grid-area: sdcard;
-    display: flex;
-    justify-content: space-between;
-}
-local-home
-{
-    grid-area: home;
     display: flex;
     justify-content: space-between;
 }
