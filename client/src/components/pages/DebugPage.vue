@@ -3,7 +3,7 @@ import { computed, inject } from "vue";
 import type { IBambuMonitorClient } from "../../plugins/IBambuMonitorClient.ts";
 
 import Ams from "../Ams.vue"
-import Job from "../Job.vue"
+import Job from "../JobDebug.vue"
 import JsonDisplay from "../generic/JsonDisplay.vue";
 import Lights from "../Lights.vue";
 import Temperature from "../Temperature.vue";
