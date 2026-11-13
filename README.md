@@ -59,7 +59,7 @@ To build a docker image of the Bambu Monitor,
 1. Clear out the "server/dist/wwwroot" folder manually or add "--emptyOutDir" to your build command.
 1. In the client folder, run "npm run build". This will create the client files in the "server/dist/wwwroot" folder
 1. In the server folder, run "npm run build". This will build the server application into "server/dist"
-1. Make sure that you have your certificates for the volume mounts in the correct place, this docker-compose file expects them to be in ```/usr/syno/etc/certificate/_archive/xxxx/cert.pem``` and ```/usr/syno/etc/certificate/_archive/xxxx/privkey.pem``` which, when xxxx is replaced with the actual random sting, represents where certificates are stored on a Synology DSM NAS. Change these paths to where the certificates are in your deployment
+1. Make sure that you have your certificates for the volume mounts in the correct place, this docker-compose file expects them to be in ```/usr/syno/etc/certificate/_archive/xxxx/cert.pem``` and ```/usr/syno/etc/certificate/_archive/xxxx/privkey.pem``` which, when xxxx is replaced with the actual random string, represents where certificates are stored on a Synology DSM NAS. Change these paths to where the certificates are in your deployment
 1. Optional: Set up docker context
     1. Create context width ```docker context create --docker host=ssh://<user>@<host> --description "My NAS" <my-context>```
     1. Store the password to your user width ```sshpass -p '<password>' ssh <user>@<host>```
