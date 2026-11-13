@@ -68,7 +68,8 @@ local-job-progress-text
 {
     position: absolute;
     left: 50%;
-    color: contrast-color(var(--color-on));
+    color: var(--color-text-highlight);
+    text-shadow: 0 1px 2px rgb(from var(--color-background) r g b / 0.9), 0 0 4px rgb(from var(--color-background) r g b / 0.7);
 }
 local-job-progress-bar
 {
